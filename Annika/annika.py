@@ -28,12 +28,12 @@ for i in range(Punkte):
 
 
 
-plt.savefig('P5\\Annika\\Kugel.pdf')
+plt.savefig('PC\\Annika\\Kugel.pdf')
 plt.show()
 plt.cla()
 # plt.hist(xWerte+yWerte+FxWerte+FyWerte, bins=100)
 # plt.hist(FxWerte+FyWerte, bins=100)
-# plt.savefig('P5\\Annika\\Kugelplot.pdf')
+# plt.savefig('PC\\Annika\\Kugelplot.pdf')
 # plt.cla()
 
 
