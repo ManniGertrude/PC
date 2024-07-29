@@ -29,16 +29,16 @@ SS24 = np.zeros(len(Anteile))
 WS2425 = np.zeros(len(Anteile))
 
 xWerte = np.linspace(0, 1, 100)
-Menge = 0
-Mittelwertliste = np.array([WS2223, SS23, WS2324, SS24, WS2425])
-Sigma = np.array([WS2223, SS23, WS2324, SS24, WS2425])
+Menge = []
+Mittelwertliste = np.array([WS2223, SS23, WS2324, SS24]) # , WS2425
+Sigma = np.array([WS2223, SS23, WS2324, SS24]) # , WS2425
 
 def Plot(data, Name, yError, Farbe):
     plt.grid()
     plt.errorbar(Anteil, data, xerr=0.01, yerr=yError, color = Farbe, capsize=3, linestyle='none')
     # plt.set(xlabel='Kanalnummer', ylabel='Anzahl an Messergebnissen')
     plt.legend()
-    ax.savefig(f'{path}\\{Name}.pdf')
+    ax.savefig(f'{path}\\{Name}.png')
     ax.show
     plt.cla()
 
@@ -60,7 +60,7 @@ def fit(func, x, y, Name, yError, Farbe, labeln):
     if labeln == True:
         plt.plot(xWerte, fy, label = f'{out.beta[0]:.1f} $^\circ C$', alpha=0.65, color=Farbe)
     else:
-        plt.plot(xWerte, fy, alpha=0.65, color=Farbe)
+        plt.plot(xWerte, fy, label = Name, alpha=0.65, color=Farbe)
     return out
 
 
@@ -78,9 +78,9 @@ for i in range(len(Dateien)):
     fit(lin, Anteil[:9], Mittelwertliste[i][:9], Dateien[i][10:], Sigma[i][:9], colortable[i], True)
     plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in $^\circ C$')
     plt.set_title(f'{len(Data[j])} Messungen {Bezeichnung[i]}')
-    plt.set_ylim(68, 130)
+    plt.set_ylim(68, 132)
     plt.set_xlim(-0.02, 1.02)
-    Menge = Menge + len(Data[j])
+    Menge.append(len(Data[j]))
     # X_Y_Spline = make_interp_spline(Anteil[9:], Mittelwertliste[i][9:])
     # Y_ = X_Y_Spline(xWerte)
     # plt.plot(xWerte, Y_, color=colortable[i], alpha=0.5)
@@ -93,17 +93,29 @@ for i in range(len(Dateien)):
     X_Y_Spline = make_interp_spline(Anteil[9:], Mittelwertliste[i][9:])
     Y_ = X_Y_Spline(xWerte)
     plt.plot(xWerte, Y_, color=colortable[i], alpha=0.8)
-plt.set_title(f'{Menge} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
+plt.set_title(f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
 plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in $^\circ C$')
-plt.set_ylim(68, 130)
+plt.set_ylim(68, 132)
 plt.set_xlim(-0.02, 1.02)
 plt.legend()
 plt.grid()
-ax.savefig(f'{path}\\Alle.pdf')
+ax.savefig(f'{path}\\Alle.png')
 ax.show
 plt.cla()
 
-# 
-for i in range(len(Dateien)):
-    for j in range(len(Mittelwertliste[i])):
-        print(len(Mittelwertliste[i]))
+
+Gesamtdurchschnitt = np.zeros(len(Anteile))
+Gesamtsigma = np.zeros(len(Anteile))
+for i in range(len(Mittelwertliste)):
+    Gesamtdurchschnitt = Gesamtdurchschnitt + Mittelwertliste[i]*(Menge[i]/sum(Menge))
+    Gesamtsigma = Gesamtsigma + Sigma[i]*(Menge[i]/sum(Menge))
+plt.errorbar(Anteil, Gesamtdurchschnitt, xerr=0.01, yerr=Gesamtsigma[i], color='black', capsize=3, linestyle='none', label=None)
+fit(lin, Anteil[:9], Gesamtdurchschnitt[:9], None, Gesamtsigma[:9], 'black', True)
+plt.set_title(f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
+plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in $^\circ C$')
+plt.set_ylim(68, 132)
+plt.set_xlim(-0.02, 1.02)
+plt.legend()
+plt.grid()
+ax.savefig(f'{path}\\Gesamt.png')
+ax.show()
