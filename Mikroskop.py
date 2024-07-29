@@ -78,7 +78,7 @@ for i in range(len(Dateien)):
         Mittelwertliste[i][temp] = Mittelwert
         temp += 1
     fit(lin, Anteil[:9], Mittelwertliste[i][:9], Dateien[i][10:], Sigma[i][:9], colortable[i], True)
-    plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in$^\circ C$')
+    plt.set(xlabel='Stoffkonzentration $x_B$', ylabel='Temperatur in$^\circ C$')
     plt.set_title(f'{len(Data[j])} Messungen {Bezeichnung[i]}')
     plt.set_ylim(68, 132)
     plt.set_xlim(-0.02, 1.02)
@@ -96,7 +96,7 @@ for i in range(len(Dateien)):
     Y_ = X_Y_Spline(xWerte)
     plt.plot(xWerte, Y_, color=colortable[i], alpha=0.8)
 plt.set_title(f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
-plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in$^\circ C$')
+plt.set(xlabel='Stoffkonzentration $x_B$', ylabel='Temperatur in$^\circ C$')
 plt.set_ylim(68, 132)
 plt.set_xlim(-0.02, 1.02)
 plt.legend()
@@ -115,7 +115,7 @@ for i in range(len(Mittelwertliste)):
 plt.errorbar(Anteil, Gesamtdurchschnitt, xerr=0.01, yerr=Gesamtsigma[i], color='black', capsize=3, linestyle='none', label=None)
 fit(lin, Anteil[:9], Gesamtdurchschnitt[:9], None, Gesamtsigma[:9], 'black', True)
 plt.set_title(f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
-plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in$^\circ C$')
+plt.set(xlabel='Stoffkonzentration $x_B$', ylabel='Temperatur in$^\circ C$')
 plt.set_ylim(68, 132)
 plt.set_xlim(-0.02, 1.02)
 plt.legend()
