@@ -38,7 +38,9 @@ def Plot(data, Name, yError, Farbe):
     plt.errorbar(Anteil, data, xerr=0.01, yerr=yError, color = Farbe, capsize=3, linestyle='none')
     # plt.set(xlabel='Kanalnummer', ylabel='Anzahl an Messergebnissen')
     plt.legend()
-    ax.savefig(f'{path}\\{Name}.png')
+    ax.savefig(f'{path}\\PNG\\{Name}.png')
+    ax.savefig(f'{path}\\PDF\\{Name}.pdf')
+
     ax.show
     plt.cla()
 
@@ -58,14 +60,14 @@ def fit(func, x, y, Name, yError, Farbe, labeln):
     # print('$Parameter:', out.beta, out.sd_beta,  '$')
     # print('$R_{lin}^2 =',rsquared, '$')
     if labeln == True:
-        plt.plot(xWerte, fy, label = f'{out.beta[0]:.1f} $^\circ C$', alpha=0.65, color=Farbe)
+        plt.plot(xWerte, fy, label = f'[{out.beta[0]:.1f}$\pm${out.sd_beta[0]:.1g}]$^\circ C$', alpha=0.65, color=Farbe)
     else:
         plt.plot(xWerte, fy, label = Name, alpha=0.65, color=Farbe)
     return out
 
 
 for i in range(len(Dateien)):
-    Data = pd.read_csv(f'{path}\\{Dateien[i]}.csv', sep="\t",header=0, names=Anteile).astype(np.float64)
+    Data = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep="\t",header=0, names=Anteile).astype(np.float64)
     temp = 0
     for j in Anteile:
         Mittelwert = sum(Data[j])/len(Data[j])
@@ -76,7 +78,7 @@ for i in range(len(Dateien)):
         Mittelwertliste[i][temp] = Mittelwert
         temp += 1
     fit(lin, Anteil[:9], Mittelwertliste[i][:9], Dateien[i][10:], Sigma[i][:9], colortable[i], True)
-    plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in $^\circ C$')
+    plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in$^\circ C$')
     plt.set_title(f'{len(Data[j])} Messungen {Bezeichnung[i]}')
     plt.set_ylim(68, 132)
     plt.set_xlim(-0.02, 1.02)
@@ -94,12 +96,13 @@ for i in range(len(Dateien)):
     Y_ = X_Y_Spline(xWerte)
     plt.plot(xWerte, Y_, color=colortable[i], alpha=0.8)
 plt.set_title(f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
-plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in $^\circ C$')
+plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in$^\circ C$')
 plt.set_ylim(68, 132)
 plt.set_xlim(-0.02, 1.02)
 plt.legend()
 plt.grid()
-ax.savefig(f'{path}\\Alle.png')
+ax.savefig(f'{path}\\PNG\\Alle.png')
+ax.savefig(f'{path}\\PDF\\Alle.pdf')
 ax.show
 plt.cla()
 
@@ -112,10 +115,11 @@ for i in range(len(Mittelwertliste)):
 plt.errorbar(Anteil, Gesamtdurchschnitt, xerr=0.01, yerr=Gesamtsigma[i], color='black', capsize=3, linestyle='none', label=None)
 fit(lin, Anteil[:9], Gesamtdurchschnitt[:9], None, Gesamtsigma[:9], 'black', True)
 plt.set_title(f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
-plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in $^\circ C$')
+plt.set(xlabel='Stoffkonzentration $x_A$', ylabel='Temperatur in$^\circ C$')
 plt.set_ylim(68, 132)
 plt.set_xlim(-0.02, 1.02)
 plt.legend()
 plt.grid()
-ax.savefig(f'{path}\\Gesamt.png')
+ax.savefig(f'{path}\\PNG\\Gesamt.png')
+ax.savefig(f'{path}\\PDF\\Gesamt.pdf')
 ax.show()
