@@ -88,6 +88,7 @@ Gesamtdurchschnitt = np.zeros(len(Anteile))
 Gesamtsigma = np.zeros(len(Anteile))
 for i in range(len(Mittelwertliste)):
     Gesamtdurchschnitt = Gesamtdurchschnitt + Mittelwertliste[i]*(Menge[i]/sum(Menge))
+    print(Sigma[i])
     Gesamtsigma = Gesamtsigma + Sigma[i]*(Menge[i]/sum(Menge))
 plt.errorbar(Anteil, Gesamtdurchschnitt, xerr=0.01, yerr=Gesamtsigma[i], color='black', capsize=3, linestyle='none', label=None)
 fit(lin, Anteil[:9], Gesamtdurchschnitt[:9], None, Gesamtsigma[:9], 'black', True)
