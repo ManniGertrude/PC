@@ -101,4 +101,4 @@ Zieldata = Zieldata.iloc[-1].values
 plt.errorbar(Anteil[10:], Zieldata[10:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
 plt.errorbar(Anteil[:9], Zieldata[:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
 fit(lin, Anteil[:9], Zieldata[:9], None, [1]*11, 'purple', True)
-Plotparams('WS2425\\Daten Gruppe AX', 'Daten der Gruppe AX')
+Plotparams('WS2425\\Mikroskop AX', 'Daten der Gruppe AX')
