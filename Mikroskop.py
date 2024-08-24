@@ -13,15 +13,15 @@ Anteile = ['E122', 'E199', 'E290', 'E430', 'E500', 'E600', 'E700', 'E800', 'E900
 
 Dateien = ['Mikroskop_WS_22-23', 'Mikroskop_SS_23', 'Mikroskop_WS_23-24', 'Mikroskop_SS_24']# , 'Mikroskop_WS_24-25'
 Bezeichnung = ['WS 22-23', 'SS 23', 'WS 23-24', 'SS 24']# , 'WS 24-25'
-colortable = ['sienna', 'darkgoldenrod', 'darkolivegreen', 'steelblue', 'orchid']
+colortable = ['sienna', 'darkgoldenrod', 'darkolivegreen', 'steelblue', 'darkmagenta']
 
 WS2223 = np.zeros(len(Anteile))
 SS23 = np.zeros(len(Anteile))
 WS2324 = np.zeros(len(Anteile))
 SS24 = np.zeros(len(Anteile))
 WS2425 = np.zeros(len(Anteile))
-Mittelwertliste = np.array([WS2223, SS23, WS2324, SS24]) # , WS2425
-Sigma = np.array([WS2223, SS23, WS2324, SS24]) # , WS2425
+Mittelwertliste = np.array([WS2223, SS23, WS2324, SS24])# , WS2425
+Sigma = np.array([WS2223, SS23, WS2324, SS24])# , WS2425 
 
 ax, plt = plt.subplots()
 xWerte = np.linspace(0, 1, 100)
@@ -42,7 +42,6 @@ def Plotparams(Name, Titel):
 def lin(Para, x): 
     return Para[0] + x*Para[1] - x*Para[1]
 
-
 def fit(func, x, y, Name, yError, Farbe, labeln):
     model = odr.Model(func)
     mydata = odr.RealData(x, y, sx= 0.01, sy=yError)
@@ -54,7 +53,6 @@ def fit(func, x, y, Name, yError, Farbe, labeln):
     else:
         plt.plot(xWerte, fy, label = Name, alpha=0.65, color=Farbe)
     return out
-
 
 # Jedes Semester einzeln in einem Plot
 for i in range(len(Dateien)):
@@ -82,18 +80,15 @@ for i in range(len(Dateien)):
     plt.plot(xWerte, Y_, color=colortable[i], alpha=0.8)
 Plotparams('Alle', f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
 
-
 # Alle Werte in zusammengefasst in einem Plot
 Gesamtdurchschnitt = np.zeros(len(Anteile))
 Gesamtsigma = np.zeros(len(Anteile))
 for i in range(len(Mittelwertliste)):
     Gesamtdurchschnitt = Gesamtdurchschnitt + Mittelwertliste[i]*(Menge[i]/sum(Menge))
-    print(Sigma[i])
     Gesamtsigma = Gesamtsigma + Sigma[i]*(Menge[i]/sum(Menge))
 plt.errorbar(Anteil, Gesamtdurchschnitt, xerr=0.01, yerr=Gesamtsigma[i], color='black', capsize=3, linestyle='none', label=None)
 fit(lin, Anteil[:9], Gesamtdurchschnitt[:9], None, Gesamtsigma[:9], 'black', True)
 Plotparams('Gesamt', f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
-
 
 # Datenüberprüfung einer einzelnen Messung
 Zieldata = pd.read_csv(f'{path}\\Daten\\{Dateien[3]}.csv', sep="\t",header=0, names=Anteile).astype(np.float64)

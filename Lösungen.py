@@ -13,13 +13,14 @@ path = "C:\\Users\\kontr\\Desktop\\Github\\PC"  # PC
 
 Data = pd.read_csv(f'{path}\\Daten\\Wasser_WS_24-25.csv', sep=",", header=0).astype(np.float64)
 Data_ideal = pd.read_table(f'{path}\\Daten\\Ideal_WS_24-25.csv', sep=",", header=0, index_col=0)
-Gruppen = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5', 'AX']
+Gruppen = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5']
 Stoffe = ['Benzoe', 'Salicyl']
 
-
+# Definition der Graden
 def lin(Para, x):
     return Para[0]*x + Para[1]
 
+# Ausrechnung der wässrigen Lösungen
 def Auswertung(Gruppe, Stoff):
     C = 0.1                                                             # Molarität M = mol/L
     C_Error = 0.01                                                      # M
@@ -47,17 +48,18 @@ def Auswertung(Gruppe, Stoff):
     ax.plot(Rez_T, fy, c='red',label = f'({out.beta[0]:.0f}$\pm${out.sd_beta[0]:.0f}$) \cdot T^-$$^1 + ${out.beta[1]:.1f}$\pm${out.sd_beta[1]:.1f} mit $R^2 =${rsquared:.3f}' )
     H_mLinf = -out.beta[0]*8.314                                        # J
     H_mLinf_Error = out.sd_beta[0]*8.314                                # J
-    # if Stoff == 'Salicyl':
-    #     AbweichungReal = (H_mLinf - 14500)/14500
-    #     AbweichungReal_Error = H_mLinf_Error/14500
-    # elif Stoff == 'Benzoe':
-    #     AbweichungReal = (H_mLinf - 13800)/13800
-    #     AbweichungReal_Error = H_mLinf_Error/13800
-    
+    if Stoff == 'Salicyl':
+        AbweichungReal = (H_mLinf - 14500)/14500
+        AbweichungReal_Error = H_mLinf_Error/14500
+    elif Stoff == 'Benzoe':
+        AbweichungReal = (H_mLinf - 13800)/13800
+        AbweichungReal_Error = H_mLinf_Error/13800
+
         
     ax.errorbar(Rez_T, ln_x_B, xerr=Rez_T_Error, yerr=ln_x_B_Error, color='navy', capsize=3, linestyle='none', label='Messwerte')
     ax.set(xlabel='Reziproke Temperatur $^\circ C^{-1}$', ylabel='Stoffmengen-Logarithmus')
-    ax.set_title(f'Bestimmung der Lösungsenthalpie $H_m^\infty$ = {H_mLinf:.0f} J/mol K')
+    fig.suptitle(f'Bestimmung der 1. mol. Lösungsenthalpie $\Delta_LH_B^\infty$ = {H_mLinf:.0f} J/mol K', fontsize=12)
+    ax.set_title(f'Abweichung zu $\Delta_L H_B$: ({100*AbweichungReal:.1f} $\pm$ {100*AbweichungReal_Error:.1f})%', fontsize=12)
     ax.legend()
     ax.grid()
     ax.set_xticks(np.linspace(0.0031, 0.0033, 5))
@@ -66,8 +68,26 @@ def Auswertung(Gruppe, Stoff):
     fig.savefig(f'{path}\\PDF\\WS2425\\Wasser {Gruppe} {Stoff}.pdf')
     fig.show()
     plt.cla()
-    # print(f'Abweichung Real: {100*AbweichungReal:.2f} \pm {100*AbweichungReal_Error:.2f}%')
 
+# Abfrage für alle Gruppen, Wasser
+def AlleAbfragen():
+    for i in Gruppen:
+        for j in Stoffe:
+            if f'T({i}_{j[:1]})' in Data:
+                if math.isnan(Data[f'T({i}_{j[:1]})'].values[0]):
+                    quit
+                else:
+                    Auswertung(i, j)
+
+# Abfrage für eine Gruppe, Wasser
+def EineAbfrage(Gruppe, Stoff):
+    if f'T({Gruppe}_{Stoff[:1]})' in Data:
+        if math.isnan(Data[f'T({Gruppe}_{Stoff[:1]})'].values[0]):
+            quit
+        else:
+            Auswertung(Gruppe, Stoff)
+
+# Ideale Löslichkeit
 def Ideal(Gruppe):
     if Gruppe in Data_ideal.index:
         IdealData = Data_ideal.loc[Gruppe].values
@@ -84,12 +104,12 @@ def Ideal(Gruppe):
         b_B = n_B/m_A                       # mol/g
         n_A = m_A/M_A                       # mol
         x_B = n_B/(n_A + n_B)               # Einheitenlos
-        x_B_lit = np.exp(-14750/8.3145*(1/(T_ideal)-1/395.5))
+        x_B_lit = np.exp(-14750/8.31446*(1/(T_ideal)-1/395.5))
         Abweichung_ideal = (x_B - x_B_lit)/x_B_lit
         
         V_Error = 0.0002
         T_Error = 0.5
-        C_Error = 0.025
+        C_Error = 0.02 # <<<------ Sehr stark von diesem Fehler abhängig <- Überprüfen
         n_B_Error = np.sqrt((C_Error*V_ideal)**2 + (C_ideal * V_Error)**2)
         m_B_Error = M_B*n_B_Error
         M_brutto_Error = 0.01
@@ -99,14 +119,15 @@ def Ideal(Gruppe):
         x_B_Error = np.sqrt((n_A*n_B_Error/(n_A + n_B)**2)**2 + (n_A_Error*n_B/(n_B + n_A)**2)**2)
         x_B_lit_Error = abs(T_Error*14750/(T_ideal**2*8.3145) *np.exp(-14750/8.3145*(1/(T_ideal)-1/395.5)))
         Abweichung_Ideal_Error = np.sqrt((x_B_lit_Error/x_B)**2 + (x_B_Error *x_B_lit/x_B**2 )**2)
-        
-        print(f'Abweichung Real: {100*Abweichung_ideal:.2f} \pm {100*Abweichung_Ideal_Error:.3g}%')
+        print()
+        print(f'Die Ideale Löslichkeit beträgt: {x_B_lit:.4g} \pm {x_B_lit_Error:.2g}')
+        print(f'Die exp. Löslichkeit beträgt:   {x_B:.4g} \pm {x_B_lit:.2g}')
+        print()
+        print(f'Die Abweichung des exp. Werts vom idealen beträgt ({100*Abweichung_ideal:.2g} \pm {100*Abweichung_Ideal_Error:.2g})%')
+        print()
 
-for i in Gruppen:
-    for j in Stoffe:
-        if f'T({i}_{j[:1]})' in Data:
-            if math.isnan(Data[f'T({i}_{j[:1]})'].values[0]):
-                quit
-            else:
-                Auswertung(i, j)
-    Ideal(i)
+
+
+# AlleAbfragen()
+# EineAbfrage('A1', 'Salicyl'), 
+# Ideal('A1')
