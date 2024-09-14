@@ -56,7 +56,7 @@ def fit(func, x, y, Name, yError, Farbe, labeln):
 
 # Jedes Semester einzeln in einem Plot
 for i in range(len(Dateien)):
-    Data = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep="\t",header=0, names=Anteile).astype(np.float64)
+    Data = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep=",",header=0, names=Anteile)
     temp = 0
     for j in Anteile:
         Mittelwert = st.mean(Data[j])
@@ -91,9 +91,11 @@ fit(lin, Anteil[:9], Gesamtdurchschnitt[:9], None, Gesamtsigma[:9], 'black', Tru
 Plotparams('Gesamt', f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
 
 # Datenüberprüfung einer einzelnen Messung
-Zieldata = pd.read_csv(f'{path}\\Daten\\{Dateien[3]}.csv', sep="\t",header=0, names=Anteile).astype(np.float64)
+Zieldata = pd.read_csv(f'{path}\\Daten\\{Dateien[3]}.csv', sep=",",header=0, names=Anteile)
 Zieldata = Zieldata.iloc[-1].values
 plt.errorbar(Anteil[10:], Zieldata[10:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
 plt.errorbar(Anteil[:9], Zieldata[:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
 fit(lin, Anteil[:9], Zieldata[:9], None, [1]*11, 'purple', True)
+
+
 Plotparams('WS2425\\Mikroskop AX', 'Daten der Gruppe AX')
