@@ -128,6 +128,6 @@ def Ideal(Gruppe):
 
 
 
-# AlleAbfragen()
-# EineAbfrage('A1', 'Salicyl'), 
-# Ideal('A1')
+AlleAbfragen()
+EineAbfrage('A1', 'Salicyl'), 
+Ideal('A1')
