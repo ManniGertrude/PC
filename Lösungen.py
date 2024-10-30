@@ -26,8 +26,8 @@ def Auswertung(Gruppe, Stoff):
     C_Error = 0.03*C                                                # M
     T_Data = np.array(Data[f'T({Gruppe}_{Stoff[:1]})'].values)+273.15   # K
     V_Data = np.array(Data[f'V({Gruppe}_{Stoff[:1]})'].values)          # mL
-    T_Error = np.array([0.2]*len(T_Data))                               # K
-    V_Error = np.array([0.2]*len(V_Data))                               # mL
+    T_Error = np.array([0.2]*len(T_Data))                               # K     (geraten)*
+    V_Error = np.array([0.1]*len(V_Data))                               # mL    (gemessen)
     n_B = 1e-4*V_Data                                                   # mol
     n_B_Error = np.sqrt((1e-3*V_Data*C_Error)**2+(1e-3*V_Error*C)**2)   # mol
     n_A = 1.387                                                         # mol
