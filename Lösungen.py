@@ -7,8 +7,8 @@ from sklearn.metrics import r2_score
 
 
 fig, ax = plt.subplots()
-path = "C:\\Users\\kontr\\Desktop\\Github\\PC"  # PC
-# path = 'C:\\Users\\Surface Pro 7 Manni\\Desktop\\Code Dateien\\P5\\525\\Messungen\\csv' # Surface
+# path = "C:\\Users\\kontr\\Desktop\\Github\\PC"  # PC
+path = 'C:\\Users\\Surface Pro 7 Manni\\Desktop\\Code Dateien\\PC' # Surface
 
 
 Data = pd.read_csv(f'{path}\\Daten\\Wasser_WS_24-25.csv', sep=",", header=0).astype(np.float64)
@@ -20,10 +20,10 @@ Stoffe = ['Benzoe', 'Salicyl']
 def lin(Para, x):
     return Para[0]*x + Para[1]
 
-# Ausrechnung der wässrigen Lösungen
+# Ausrechnung der wässrigen Lösungen 
 def Auswertung(Gruppe, Stoff):
-    C = 0.1                                                             # Molarität M = mol/L
-    C_Error = 0.01                                                      # M
+    C = 0.1                                                           # Molarität M = mol/L
+    C_Error = 0.03*C                                                # M
     T_Data = np.array(Data[f'T({Gruppe}_{Stoff[:1]})'].values)+273.15   # K
     V_Data = np.array(Data[f'V({Gruppe}_{Stoff[:1]})'].values)          # mL
     T_Error = np.array([0.2]*len(T_Data))                               # K
@@ -37,7 +37,6 @@ def Auswertung(Gruppe, Stoff):
     ln_x_B_Error = abs(x_B_Error/x_B)                                   # Einheitenlos
     Rez_T = 1/T_Data                                                    # 1/T
     Rez_T_Error = T_Error/T_Data**2                                     # 1/T
-    
     
     model = odr.Model(lin)
     mydata = odr.RealData(Rez_T, ln_x_B, sx=Rez_T_Error, sy=ln_x_B_Error)
@@ -106,10 +105,10 @@ def Ideal(Gruppe):
         x_B = n_B/(n_A + n_B)               # Einheitenlos
         x_B_lit = np.exp(-14750/8.31446*(1/(T_ideal)-1/395.5))
         Abweichung_ideal = (x_B - x_B_lit)/x_B_lit
-        
+    
         V_Error = 0.0002
-        T_Error = 0.5
-        C_Error = 0.02 # <<<------ Sehr stark von diesem Fehler abhängig <- Überprüfen
+        T_Error = 0.50
+        C_Error = 0.05*C_ideal # <<<------ Sehr stark von diesem Fehler abhängig <- Überprüfen
         n_B_Error = np.sqrt((C_Error*V_ideal)**2 + (C_ideal * V_Error)**2)
         m_B_Error = M_B*n_B_Error
         M_brutto_Error = 0.01
