@@ -10,13 +10,13 @@ fig, ax = plt.subplots()
 # path = "C:\\Users\\kontr\\Desktop\\Github\\PC"  # PC
 path = 'C:\\Users\\Surface Pro 7 Manni\\Desktop\\Code Dateien\\PC' # Surface
 
-
+#Einlesen der Daten und Definition der Gruppen und Stoffe
 Data = pd.read_csv(f'{path}\\Daten\\Wasser_WS_24-25.csv', sep=",", header=0).astype(np.float64)
 Data_ideal = pd.read_table(f'{path}\\Daten\\Ideal_WS_24-25.csv', sep=",", header=0, index_col=0)
 Gruppen = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5']
 Stoffe = ['Benzoe', 'Salicyl']
 
-# Definition der Graden
+# Definition der Ausgleichsfunktion
 def lin(Para, x):
     return Para[0]*x + Para[1]
 
@@ -38,35 +38,58 @@ def Auswertung(Gruppe, Stoff):
     Rez_T = 1/T_Data                                                    # 1/T
     Rez_T_Error = T_Error/T_Data**2                                     # 1/T
     
+    # Regression
     model = odr.Model(lin)
     mydata = odr.RealData(Rez_T, ln_x_B, sx=Rez_T_Error, sy=ln_x_B_Error)
     myodr = odr.ODR(mydata, model, beta0=[-4000, 5], maxit=1000)
     out = myodr.run()
     fy = lin(out.beta, Rez_T)
     rsquared = r2_score(ln_x_B, fy)
-    ax.plot(Rez_T, fy, c='red',label = f'({out.beta[0]:.0f}$\pm${out.sd_beta[0]:.0f}$) \cdot T^-$$^1 + ${out.beta[1]:.1f}$\pm${out.sd_beta[1]:.1f} mit $R^2 =${rsquared:.3f}' )
+    
+    # Lösungsenthalpie
     H_mLinf = -out.beta[0]*8.314                                        # J
     H_mLinf_Error = out.sd_beta[0]*8.314                                # J
     if Stoff == 'Salicyl':
+        # Mischenthalpie
+        Mischenthalpie = H_mLinf - 14500
+        Mischenthalpie_Error = H_mLinf_Error
+        # Abweichung Mischenthalpie zu Schmelzenthalpie
         AbweichungReal = (H_mLinf - 14500)/14500
         AbweichungReal_Error = H_mLinf_Error/14500
+        # Ideale Löslichkeit
+        x_B_id = np.exp(-27100/8.31446*(1/(T_Data)-1/431.4))
+        x_B_id_Error = abs(x_B_id*27100*T_Error/(8.31446*(T_Data)**2))
     elif Stoff == 'Benzoe':
-        AbweichungReal = (H_mLinf - 13800)/13800
-        AbweichungReal_Error = H_mLinf_Error/13800
-
+        # Mischenthalpie
+        Mischenthalpie = H_mLinf - 13800
+        Mischenthalpie_Error = H_mLinf_Error
+        # Ideale Löslichkeit
+        x_B_id = np.exp(-18000/8.31446*(1/(T_Data)-1/395.5))
+        x_B_id_Error = abs(x_B_id*18000*T_Error/(8.31446*(T_Data)**2))
         
+
+    
+    print(f'Gruppe: {Gruppe}, Stoff: {Stoff}')
+    print(f'Die Lösungsenthalpie beträgt: ({H_mLinf:.0f} \pm {H_mLinf_Error:.0f}) J/mol')
+    print(f'Die Mischenthalpie beträgt: ({Mischenthalpie:.0f} \pm {Mischenthalpie_Error:.0f}) J/mol')
+    print(f'Die ideale Löslichkeit beträgt: ')
+    for i in range(len(x_B_id)):
+        print(f'({x_B_id[i]:.4f} \pm {x_B_id_Error[i]:.4f}) bei ({T_Data[i]:.2f} \pm {T_Error[i]:.2f}) K')
+    print()
+
+    # Plot
+    ax.plot(Rez_T, fy, c='red',label = f'({out.beta[0]:.0f}$\pm${out.sd_beta[0]:.0f}$) \cdot T^-$$^1 + ${out.beta[1]:.1f}$\pm${out.sd_beta[1]:.1f} mit $R^2 =${rsquared:.3f}' )     
     ax.errorbar(Rez_T, ln_x_B, xerr=Rez_T_Error, yerr=ln_x_B_Error, color='navy', capsize=3, linestyle='none', label='Messwerte')
     ax.set(xlabel='Reziproke Temperatur $^\circ C^{-1}$', ylabel='Stoffmengen-Logarithmus')
-    fig.suptitle(f'Bestimmung der 1. mol. Lösungsenthalpie $\Delta_LH_B^\infty$ = {H_mLinf:.0f} J/mol K', fontsize=12)
-    ax.set_title(f'Abweichung zu $\Delta_L H_B$: ({100*AbweichungReal:.1f} $\pm$ {100*AbweichungReal_Error:.1f})%', fontsize=12)
+    fig.suptitle(f'Bestimmung der 1. mol. Lösungsenthalpie $\Delta_LH_B^\infty$ = {H_mLinf:.0f} J/mol', fontsize=12)
     ax.legend()
     ax.grid()
     ax.set_xticks(np.linspace(0.0031, 0.0033, 5))
     ax.set_xticks(np.linspace(0.0031, 0.0033, 21), minor=True)
-    fig.savefig(f'{path}\\PNG\\WS2425\\Wasser {Gruppe} {Stoff}.png')
-    fig.savefig(f'{path}\\PDF\\WS2425\\Wasser {Gruppe} {Stoff}.pdf')
+    fig.savefig(f'{path}\\PNG\\WS2425 Wasser\\Wasser {Gruppe} {Stoff}.png')
     fig.show()
     plt.cla()
+
 
 # Abfrage für alle Gruppen, Wasser
 def AlleAbfragen():
@@ -86,7 +109,7 @@ def EineAbfrage(Gruppe, Stoff):
         else:
             Auswertung(Gruppe, Stoff)
 
-# Ideale Löslichkeit
+# Ideale Löslichkeit für eine Gruppe
 def Ideal(Gruppe):
     if Gruppe in Data_ideal.index:
         IdealData = Data_ideal.loc[Gruppe].values
@@ -119,14 +142,14 @@ def Ideal(Gruppe):
         x_B_lit_Error = abs(T_Error*14750/(T_ideal**2*8.3145) *np.exp(-14750/8.3145*(1/(T_ideal)-1/395.5)))
         Abweichung_Ideal_Error = np.sqrt((x_B_lit_Error/x_B)**2 + (x_B_Error *x_B_lit/x_B**2 )**2)
         print()
+        print(f'Organisches Lösungsmittel der Gruppe {Gruppe}')
         print(f'Die Ideale Löslichkeit beträgt: {x_B_lit:.4g} \pm {x_B_lit_Error:.2g}')
         print(f'Die exp. Löslichkeit beträgt:   {x_B:.4g} \pm {x_B_lit:.2g}')
+        print(f'Die Abweichung des exp. Werts vom Literaturwert beträgt ({100*Abweichung_ideal:.1f} \pm {100*Abweichung_Ideal_Error:.1f})%')
         print()
-        print(f'Die Abweichung des exp. Werts vom idealen beträgt ({100*Abweichung_ideal:.2g} \pm {100*Abweichung_Ideal_Error:.2g})%')
-        print()
 
 
 
-AlleAbfragen()
+# AlleAbfragen()
 EineAbfrage('A1', 'Salicyl'), 
 Ideal('A1')
