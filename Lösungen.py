@@ -7,8 +7,8 @@ from sklearn.metrics import r2_score
 
 
 fig, ax = plt.subplots()
-# path = "C:\\Users\\kontr\\Desktop\\Github\\PC"  # PC
-path = 'C:\\Users\\Surface Pro 7 Manni\\Desktop\\Code Dateien\\PC' # Surface
+path = "C:\\Users\\kontr\\Desktop\\Github\\PC"  # PC
+# path = 'C:\\Users\\Surface Pro 7 Manni\\Desktop\\Code Dateien\\PC' # Surface
 
 #Einlesen der Daten und Definition der Gruppen und Stoffe
 Data = pd.read_csv(f'{path}\\Daten\\Wasser_WS_24-25.csv', sep=",", header=0).astype(np.float64)
@@ -23,7 +23,7 @@ def lin(Para, x):
 # Ausrechnung der wässrigen Lösungen 
 def Auswertung(Gruppe, Stoff):
     C = 0.1                                                           # Molarität M = mol/L
-    C_Error = 0.03*C                                                # M
+    C_Error = 0.05*C                                                # M
     T_Data = np.array(Data[f'T({Gruppe}_{Stoff[:1]})'].values)+273.15   # K
     V_Data = np.array(Data[f'V({Gruppe}_{Stoff[:1]})'].values)          # mL
     T_Error = np.array([0.2]*len(T_Data))                               # K     (geraten)*
@@ -68,7 +68,7 @@ def Auswertung(Gruppe, Stoff):
         x_B_id_Error = abs(x_B_id*18000*T_Error/(8.31446*(T_Data)**2))
         
 
-    
+    print()
     print(f'Gruppe: {Gruppe}, Stoff: {Stoff}')
     print(f'Die Lösungsenthalpie beträgt: ({H_mLinf:.0f} \pm {H_mLinf_Error:.0f}) J/mol')
     print(f'Die Mischenthalpie beträgt: ({Mischenthalpie:.0f} \pm {Mischenthalpie_Error:.0f}) J/mol')
@@ -81,7 +81,8 @@ def Auswertung(Gruppe, Stoff):
     ax.plot(Rez_T, fy, c='red',label = f'({out.beta[0]:.0f}$\pm${out.sd_beta[0]:.0f}$) \cdot T^-$$^1 + ${out.beta[1]:.1f}$\pm${out.sd_beta[1]:.1f} mit $R^2 =${rsquared:.3f}' )     
     ax.errorbar(Rez_T, ln_x_B, xerr=Rez_T_Error, yerr=ln_x_B_Error, color='navy', capsize=3, linestyle='none', label='Messwerte')
     ax.set(xlabel='Reziproke Temperatur $^\circ C^{-1}$', ylabel='Stoffmengen-Logarithmus')
-    fig.suptitle(f'Bestimmung der 1. mol. Lösungsenthalpie $\Delta_LH_B^\infty$ = {H_mLinf:.0f} J/mol', fontsize=12)
+    fig.suptitle(f'1. mol. Lösungsenthalpie $\Delta_LH_B^\infty$ = ({H_mLinf:.0f} $\pm$ {H_mLinf_Error:.0f}) J/mol', fontsize=12)
+    ax.set_title(f'Mischenthalpie $\Delta_MH_B =$ ({Mischenthalpie:.0f} $\pm$ {Mischenthalpie_Error:.0f}) J/mol')
     ax.legend()
     ax.grid()
     ax.set_xticks(np.linspace(0.0031, 0.0033, 5))
