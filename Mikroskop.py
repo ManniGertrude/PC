@@ -67,9 +67,15 @@ def fit(func, x, y, Name, yError, Farbe, labeln):
 # Jedes Semester einzeln in einem Plot
 def Jedes_semester_ein_plot():
     for i in range(len(Dateien)):
-        Data = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep=",",header=0, names=Anteile)
+        if i < 4:
+            SpezAnteil = Anteil
+            SpezAnteile = Anteile
+        else:
+            SpezAnteil = Anteil2
+            SpezAnteile = Anteile2
+        Data = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep=",",header=0, names=SpezAnteile)
         temp = 0
-        for j in Anteile:
+        for j in SpezAnteile:
             Mittelwert = st.mean(Data[j])
             SigmaTemp = 0
             for k in Data[j]:
@@ -78,10 +84,10 @@ def Jedes_semester_ein_plot():
             Mittelwertliste[i][temp] = Mittelwert
             temp += 1
         if i < 4:
-            Menge.append(len(Data[j]))
-        fit(lin, Anteil[:9], Mittelwertliste[i][:9], Dateien[i][10:], Sigma[i][:9], colortable[i], True)
-        plt.errorbar(Anteil, Mittelwertliste[i], xerr=0.01, yerr=Sigma[i], color = colortable[i], capsize=3, linestyle='none')
-        Plotparams(Dateien[i], f'{len(Data[j])} Messungen {Bezeichnung[i]}') # Dateien[i]
+            Menge.append(len(Data))
+        fit(lin, SpezAnteil[:9], Mittelwertliste[i][:9], Dateien[i][10:], Sigma[i][:9], colortable[i], True)
+        plt.errorbar(SpezAnteil, Mittelwertliste[i], xerr=0.01, yerr=Sigma[i], color = colortable[i], capsize=3, linestyle='none')
+        Plotparams(Dateien[i], f'{len(Data[j])} Messungen {Bezeichnung[i]}')
 
 
 # Semester 1-4 in einen Plot übereinander gelegt
