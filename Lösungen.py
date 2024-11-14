@@ -4,11 +4,10 @@ import numpy as np
 import pandas as pd
 import math
 from sklearn.metrics import r2_score
-
+import os
 
 fig, ax = plt.subplots()
-path = "C:\\Users\\kontr\\Desktop\\Github\\PC"  # PC
-# path = 'C:\\Users\\Surface Pro 7 Manni\\Desktop\\Code Dateien\\PC' # Surface
+path = os.path.dirname(os.path.abspath(__file__))
 
 #Einlesen der Daten und Definition der Gruppen und Stoffe
 Data = pd.read_csv(f'{path}\\Daten\\Wasser_WS_24-25.csv', sep=",", header=0).astype(np.float64)
@@ -23,7 +22,7 @@ def lin(Para, x):
 # Ausrechnung der wässrigen Lösungen 
 def Auswertung(Gruppe, Stoff):
     C = 0.1                                                           # Molarität M = mol/L
-    C_Error = 0.05*C                                                # M
+    C_Error = 0.005*C                                                # M
     T_Data = np.array(Data[f'T({Gruppe}_{Stoff[:1]})'].values)+273.15   # K
     V_Data = np.array(Data[f'V({Gruppe}_{Stoff[:1]})'].values)          # mL
     T_Error = np.array([0.2]*len(T_Data))                               # K     (geraten)*
@@ -152,5 +151,6 @@ def Ideal(Gruppe):
 
 
 # AlleAbfragen()
-EineAbfrage('A1', 'Salicyl'), 
-Ideal('A1')
+AlleAbfragen()
+# EineAbfrage('A5', 'Benzoe')
+# Ideal('A5')

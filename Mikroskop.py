@@ -10,10 +10,10 @@ path = os.path.dirname(os.path.abspath(__file__))
 
 # Anteile Acetanilid - Benzamid
 Anteil = [0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 0.000, 0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000]
-Anteile = ['E122', 'E199', 'E290', 'E430', 'E500', 'E600', 'E700', 'E800', 'E900', 'L000', 'L122', 'L199', 'L290', 'L430', 'L500', 'L600', 'L700', 'L800', 'L900', 'E1000']
+Anteile = ['E122', 'E199', 'E290', 'E430', 'E500', 'E600', 'E700', 'E800', 'E900', 'L000', 'L122', 'L199', 'L290', 'L430', 'L500', 'L600', 'L700', 'L800', 'L900', 'L1000']
 # Anteile Acetanilid - Benzil
-Anteil2 = [0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000]	
-Anteile2 = ['E122', 'E199', 'E290', 'E430', 'E500', 'E600', 'E700', 'E800', 'E900', 'L122', 'L199', 'L290', 'L430', 'L500', 'L600', 'L700', 'L800', 'L900', 'L1000']
+Anteil2 = [0.067, 0.176, 0.301, 0.392, 0.491, 0.600, 0.660, 0.750, 0.851, 0.000, 0.067, 0.176, 0.301, 0.392, 0.491, 0.600, 0.660, 0.750, 0.851, 1.000]	
+Anteile2 = ['E067', 'E176', 'E301', 'E392', 'E491', 'E600', 'E660', 'E750', 'E851', 'L000', 'L067', 'L176', 'L301', 'L392', 'L491', 'L600', 'L660', 'L750', 'L851', 'L1000']
 
 # Daten einlesen
 Dateien = ['Mikroskop_WS_22-23', 'Mikroskop_SS_23', 'Mikroskop_WS_23-24', 'Mikroskop_SS_24', 'Mikroskop_WS_24-25']
@@ -117,7 +117,7 @@ def JedeGruppeEinPlot():
         Zieldata = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep=",",header=0, names=Anteile)
         for index, row in Zieldata.iterrows():
             RowData = row.to_list()
-            plt.errorbar(Anteil[10:], RowData[10:], xerr=0.1, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
+            plt.errorbar(Anteil[9:], RowData[9:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
             plt.errorbar(Anteil[:9], RowData[:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
             fit(lin, Anteil[:9], RowData[:9], None, [0.1]*9, 'purple', True)
             Plotparams(f'{Bezeichnung[i]}\\{index} Mikroskop', f'Daten der Gruppe {index}')
