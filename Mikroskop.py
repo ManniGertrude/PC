@@ -117,8 +117,8 @@ def JedeGruppeEinPlot():
         Zieldata = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep=",",header=0, names=Anteile)
         for index, row in Zieldata.iterrows():
             RowData = row.to_list()
-            plt.errorbar(Anteil[9:], RowData[9:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
-            plt.errorbar(Anteil[:9], RowData[:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
+            plt.errorbar(Anteil2[9:], RowData[9:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
+            plt.errorbar(Anteil2[:9], RowData[:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
             fit(lin, Anteil[:9], RowData[:9], None, [0.1]*9, 'purple', True)
             Plotparams(f'{Bezeichnung[i]}\\{index} Mikroskop', f'Daten der Gruppe {index}')
 
