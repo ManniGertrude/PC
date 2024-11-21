@@ -153,5 +153,4 @@ def Ideal(Gruppe):
 # AlleAbfragen()
 AlleAbfragen()
 # EineAbfrage('A5', 'Benzoe')
-Ideal('A5')
-Ideal('B5')
+Ideal('A4')
