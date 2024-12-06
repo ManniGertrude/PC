@@ -79,7 +79,7 @@ def Auswertung(Gruppe, Stoff):
     # Plot
     ax.plot(Rez_T, fy, c='red',label = f'({out.beta[0]:.0f}$\pm${out.sd_beta[0]:.0f}$) \cdot T^-$$^1 + ${out.beta[1]:.1f}$\pm${out.sd_beta[1]:.1f} mit $R^2 =${rsquared:.3f}' )     
     ax.errorbar(Rez_T, ln_x_B, xerr=Rez_T_Error, yerr=ln_x_B_Error, color='navy', capsize=3, linestyle='none', label='Messwerte')
-    ax.set(xlabel='Reziproke Temperatur $^\circ C^{-1}$', ylabel='Stoffmengen-Logarithmus')
+    ax.set(xlabel='Reziproke Temperatur / $ K^{-1}$', ylabel='Stoffmengen-Logarithmus')
     fig.suptitle(f'1. mol. Lösungsenthalpie $\Delta_LH_B^\infty$ = ({H_mLinf:.0f} $\pm$ {H_mLinf_Error:.0f}) J/mol', fontsize=12)
     ax.set_title(f'Mischenthalpie $\Delta_MH_B =$ ({Mischenthalpie:.0f} $\pm$ {Mischenthalpie_Error:.0f}) J/mol')
     ax.legend()
@@ -152,5 +152,6 @@ def Ideal(Gruppe):
 
 # AlleAbfragen()
 # AlleAbfragen()
-EineAbfrage('B3', 'Benzoe')
-# Ideal('A4')
+EineAbfrage('A4', 'Benzoe')
+EineAbfrage('A4', 'Salicyl')
+Ideal('A4')
