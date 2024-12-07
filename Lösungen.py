@@ -12,7 +12,7 @@ path = os.path.dirname(os.path.abspath(__file__))
 #Einlesen der Daten und Definition der Gruppen und Stoffe
 Data = pd.read_csv(f'{path}\\Daten\\Wasser_WS_24-25.csv', sep=",", header=0).astype(np.float64)
 Data_ideal = pd.read_table(f'{path}\\Daten\\Ideal_WS_24-25.csv', sep=",", header=0, index_col=0)
-Gruppen = ['A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5']
+Gruppen = ['A1', 'A2', 'A3', 'A4', 'A5','A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5','B6']
 Stoffe = ['Benzoe', 'Salicyl']
 
 # Definition der Ausgleichsfunktion
@@ -150,8 +150,7 @@ def Ideal(Gruppe):
 
 
 
-# AlleAbfragen()
-# AlleAbfragen()
-EineAbfrage('A4', 'Benzoe')
-EineAbfrage('A4', 'Salicyl')
-Ideal('A4')
+AlleAbfragen()
+# EineAbfrage('A4', 'Benzoe')
+# EineAbfrage('A4', 'Salicyl')
+# Ideal('A4')

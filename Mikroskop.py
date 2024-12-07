@@ -123,7 +123,7 @@ def JedeGruppeEinPlot():
             Plotparams(f'{Bezeichnung[i]}\\{index} Mikroskop', f'Daten der Gruppe {index}')
 
 
-# Jedes_semester_ein_plot()
+Jedes_semester_ein_plot()
 # Benzamid_zusammengefasst_zusammen()
 # Benzamid_zusammengefasst_einzeln()
 JedeGruppeEinPlot()
