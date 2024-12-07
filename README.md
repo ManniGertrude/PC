@@ -15,3 +15,9 @@ Die Python Datei *Lösungen.py* erstellt die Dateien im *PNG/WS2425 Wasser* Ordn
 Ebenfalls werden die Werte aus *Daten/Ideal_WS_24-25.csv* mit der Funktion *Ideal* ausgewertet und ebenfalls ins Terminal ausgegeben.
 
 Ob alle Gruppen mit *AlleAbfragen* oder nur bestimmte Gruppen mit *EineAbfrage* bzw. *EineGruppe* ausgewertet werden sollen, kann individuell eingestellt werden. *EineAbfrage* wertet nur die wässrige Lösung eines Stoffes einer Gruppe aus, während *EineGruppe* beide wässrige Lösungen sowie die ideale mit *Ideal* analysiert.
+
+
+### Mikroskop.py
+Die Python Datei *Mikroskop.py* erstellt die Dateien im *PNG/Mikroskop* Ordner aus den Daten aus *```Daten/Mirkoskop_*.csv```* und führt eine Regression der Daten der unteren Schmelztemperaturen mit der Funktion *fit* durch.
+
+Anschließend werden alle Gruppen einzeln (*JedeGruppeEinPlot*), zusammengefasst im Semester (*Jedes_semester_ein_plot*) und die ersten vier Semester zusammen (*Benzamid_zusammengefasst_zusammen*) und übereinandergelegt (*Benzamid_zusammengefasst_einzeln*) dargestellt.
