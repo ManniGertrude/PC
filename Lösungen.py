@@ -89,27 +89,9 @@ def Auswertung(Gruppe, Stoff):
     fig.savefig(f'{path}\\PNG\\WS2425 Wasser\\Wasser {Gruppe} {Stoff}.png')
     fig.show()
     plt.cla()
+    
 
-
-# Abfrage für alle Gruppen, Wasser
-def AlleAbfragen():
-    for i in Gruppen:
-        for j in Stoffe:
-            if f'T({i}_{j[:1]})' in Data:
-                if math.isnan(Data[f'T({i}_{j[:1]})'].values[0]):
-                    quit
-                else:
-                    Auswertung(i, j)
-
-# Abfrage für eine Gruppe, Wasser
-def EineAbfrage(Gruppe, Stoff):
-    if f'T({Gruppe}_{Stoff[:1]})' in Data:
-        if math.isnan(Data[f'T({Gruppe}_{Stoff[:1]})'].values[0]):
-            quit
-        else:
-            Auswertung(Gruppe, Stoff)
-
-# Ideale Löslichkeit für eine Gruppe
+# Ideale Löslichkeit für eine Gruppe 
 def Ideal(Gruppe):
     if Gruppe in Data_ideal.index:
         IdealData = Data_ideal.loc[Gruppe].values
@@ -149,7 +131,33 @@ def Ideal(Gruppe):
         print()
 
 
+# Abfrage für alle Gruppen, Wasser
+def AlleAbfragen():
+    for i in Gruppen:
+        for j in Stoffe:
+            if f'T({i}_{j[:1]})' in Data:
+                if math.isnan(Data[f'T({i}_{j[:1]})'].values[0]):
+                    quit
+                else:
+                    Auswertung(i, j)
+
+
+# Abfrage für eine Gruppe, Wasser
+def EineAbfrage(Gruppe, Stoff):
+    if f'T({Gruppe}_{Stoff[:1]})' in Data:
+        if math.isnan(Data[f'T({Gruppe}_{Stoff[:1]})'].values[0]):
+            quit
+        else:
+            Auswertung(Gruppe, Stoff)
+
+# Abfrage für eine Gruppe für beide Stoffe und die ideale Lösung
+def EineGruppe(Gruppe):
+    for i in Stoffe:
+        EineAbfrage(Gruppe, i)
+    Ideal(Gruppe)
+
+
+
 
 # AlleAbfragen()
-# EineAbfrage('B1', 'Salicyl')
-Ideal('B1')
+EineGruppe('B2')
