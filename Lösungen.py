@@ -150,7 +150,6 @@ def Ideal(Gruppe):
 
 
 
-AlleAbfragen()
-# EineAbfrage('A4', 'Benzoe')
-# EineAbfrage('A4', 'Salicyl')
-# Ideal('A4')
+# AlleAbfragen()
+# EineAbfrage('B1', 'Salicyl')
+Ideal('B1')
