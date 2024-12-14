@@ -158,6 +158,4 @@ def EineGruppe(Gruppe):
 
 
 
-
-
 EineGruppe('B3')
