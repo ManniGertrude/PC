@@ -159,5 +159,5 @@ def EineGruppe(Gruppe):
 
 
 
-# AlleAbfragen()
-EineGruppe('B2')
+
+EineGruppe('B3')
