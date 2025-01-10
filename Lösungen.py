@@ -158,4 +158,4 @@ def EineGruppe(Gruppe):
 
 
 
-EineGruppe('B5')
+EineGruppe('A6')
