@@ -7,11 +7,13 @@ from sklearn.metrics import r2_score
 from matplotlib.ticker import MultipleLocator
 import os
 
+
 global ax, fig
 fig, ax = plt.subplots()
 fig.set_size_inches(6, 4)
 path = os.path.dirname(os.path.abspath(__file__))
 CTable = ['deeppink', 'purple', 'indigo', 'blue', 'cornflowerblue', 'cadetblue', 'lightseagreen', 'seagreen', 'darkorange', 'coral', 'crimson' ]
+
 
 #Einlesen der Daten und Definition der Gruppen und Stoffe
 Data = pd.read_table(f'{path}\\Daten\\Wasser_WS_24-25.csv', sep=",", header=0, index_col=0)
@@ -19,10 +21,13 @@ Data_ideal = pd.read_table(f'{path}\\Daten\\Ideal_WS_24-25.csv', sep=",", header
 Gruppen = ['A1', 'A2', 'A3', 'A4', 'A5','A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5','B6']
 Stoffe = ['Benzoe', 'Salicyl']
 
+
 # Definition der Ausgleichsfunktion
 def lin(Para, x):
     return Para[0]*x + Para[1]
 
+
+# Konfidenzintervall 95%
 def ConfidenceInterval(x, out, alpha=0.95):
     n = len(x)
     p = len(out.beta)
@@ -33,12 +38,15 @@ def ConfidenceInterval(x, out, alpha=0.95):
         ci.append([out.beta[i] - tval * out.sd_beta[i], out.beta[i] + tval * out.sd_beta[i]])
     return np.array(ci)
 
+
+# Ersetzen von . durch , für die Ausgabe
 def Replacer(Text):
     Text = Text.replace('.', ',')
     return Text
 
+
+# ODR-Regression 
 def Fit(x,y,sx,sy):
-    # Regression
     model = odr.Model(lin)
     mydata = odr.RealData(x, y, sx=sx, sy=sy)
     myodr = odr.ODR(mydata, model, beta0=[-4000, 5], maxit=1000)
@@ -46,6 +54,7 @@ def Fit(x,y,sx,sy):
     return out
     
 
+# Plot der Auswertung samt Konfidenzintervall und Regression
 def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe, Stoff, out, plot=True):
     if plot == True:
         ax.errorbar(Rez_T, ln_x_B, xerr=Rez_T_Error, yerr=ln_x_B_Error, color='navy', capsize=1, linestyle='none', label='Messwerte')
@@ -78,7 +87,7 @@ def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mi
     plt.cla()
 
 
-# Ausrechnung der wässrigen Lösungen 
+# Auswertung der wässrigen Lösungen 
 def Auswertung(Gruppe, Stoff, Print=True):
     C = 0.1                                                             # Molarität M = mol/L
     C_Error = 0.005*C                                                   # M
@@ -131,10 +140,10 @@ def Auswertung(Gruppe, Stoff, Print=True):
     
     return [Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe]
 
-    
+
 
 # Ideale Löslichkeit für eine Gruppe 
-def Ideal(Gruppe, print=True):
+def Ideal(Gruppe, Print=True):
     if Gruppe in Data_ideal.index:
         IdealData = Data_ideal.loc[Gruppe].values
         T_ideal = IdealData[0] + 273.15     # K
@@ -165,7 +174,7 @@ def Ideal(Gruppe, print=True):
         x_B_Error = np.sqrt((n_A*n_B_Error/(n_A + n_B)**2)**2 + (n_A_Error*n_B/(n_B + n_A)**2)**2)
         x_B_lit_Error = abs(T_Error*14750/(T_ideal**2*8.3145) *np.exp(-14750/8.3145*(1/(T_ideal)-1/395.5)))
         Abweichung_Ideal_Error = np.sqrt((x_B_lit_Error/x_B)**2 + (x_B_Error *x_B_lit/x_B**2 )**2)
-        if print==True:
+        if Print==True:
             print()
             print(f'Organisches Lösungsmittel der Gruppe {Gruppe}')
             print(f'Die Ideale Löslichkeit beträgt: {x_B_lit:.4g} \pm {x_B_lit_Error:.2g}')
@@ -174,7 +183,7 @@ def Ideal(Gruppe, print=True):
             print()
 
 
-# Abfrage für alle Gruppen, Wasser
+# Abfrage für alle Gruppen
 def AlleAbfragen(Print = True):
     Salicyl = []
     Benzoe = []
@@ -186,8 +195,8 @@ def AlleAbfragen(Print = True):
                     Salicyl.append(Output)
                 elif j == 'Benzoe':
                     Benzoe.append(Output)
-    
-    # Plot für alle Messwerte
+        Ideal(i, Print)
+    # Plot für alle Messwerte, Wasser
     Name = ['Salicyl', 'Benzoe']
     for j in range(2):
         if j == 0:
@@ -209,6 +218,7 @@ def AlleAbfragen(Print = True):
             Mischenthalpie = H_mLinf - 13800
         Mischenthalpie_Error = H_mLinf_Error
         FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, 'Zusammen', Name[j], out, False)
+        
     
 
 # Abfrage für eine Gruppe, Wasser
@@ -219,6 +229,7 @@ def EineAbfrage(Gruppe, Stoff, Print):
         print(f'Keine Daten für Gruppe {Gruppe} und Stoff {Stoff} vorhanden')
         print()
 
+
 # Abfrage für eine Gruppe für beide Stoffe und die ideale Lösung
 def EineGruppe(Gruppe, Print):
     for i in Stoffe:
@@ -228,9 +239,11 @@ def EineGruppe(Gruppe, Print):
 
 
 
+
 # # Mögliche Auswertmethoden:
+
 # EineAbfrage('A1', 'Benzoe') # Einzelne Gruppe und einzelner Stoff
 # EineGruppe('A1') # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A1') # Ideale Lösung für eine Gruppe
-AlleAbfragen(Print = True) # Alle Gruppen und Stoffe
-                    # Mit Print = True oder = False kann das Printen der Ergebnisse gesteuert werden
+
+AlleAbfragen()  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse

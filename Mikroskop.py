@@ -6,21 +6,27 @@ from scipy.interpolate import make_interp_spline
 import statistics as st
 import os
 
+# Pfad und Plot initialisieren
 path = os.path.dirname(os.path.abspath(__file__))
+fig, ax = plt.subplots()
+xWerte = np.linspace(0, 1, 100)
 
-# Anteile Acetanilid - Benzamid
+
+# Stoffmengenanteile Acetanilid - Benzamid (x-Achse)
 Anteil = [0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 0.000, 0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000]
 Anteile = ['E122', 'E199', 'E290', 'E430', 'E500', 'E600', 'E700', 'E800', 'E900', 'L000', 'L122', 'L199', 'L290', 'L430', 'L500', 'L600', 'L700', 'L800', 'L900', 'L1000']
-# Anteile Acetanilid - Benzil
+# Stoffmengenanteile Acetanilid - Benzil (x-Achse)
 Anteil2 = [0.067, 0.176, 0.301, 0.392, 0.491, 0.600, 0.660, 0.750, 0.851, 0.000, 0.067, 0.176, 0.301, 0.392, 0.491, 0.600, 0.660, 0.750, 0.851, 1.000]	
 Anteile2 = ['E067', 'E176', 'E301', 'E392', 'E491', 'E600', 'E660', 'E750', 'E851', 'L000', 'L067', 'L176', 'L301', 'L392', 'L491', 'L600', 'L660', 'L750', 'L851', 'L1000']
 
-# Daten einlesen
+
+# Dateinamen und Bezeichnungen
 Dateien = ['Mikroskop_WS_22-23', 'Mikroskop_SS_23', 'Mikroskop_WS_23-24', 'Mikroskop_SS_24', 'Mikroskop_WS_24-25']
 Bezeichnung = ['WS 22-23', 'SS 23', 'WS 23-24', 'SS 24', 'WS 24-25']
 colortable = ['sienna', 'darkgoldenrod', 'darkolivegreen', 'steelblue', 'darkmagenta']
 
-# Listen für die Werte
+
+# Leere Listen für die Werte
 WS2223 = np.zeros(len(Anteile))
 SS23 = np.zeros(len(Anteile))
 WS2324 = np.zeros(len(Anteile))
@@ -28,12 +34,10 @@ SS24 = np.zeros(len(Anteile))
 WS2425 = np.zeros(len(Anteile))
 Mittelwertliste = np.array([WS2223, SS23, WS2324, SS24, WS2425])
 Sigma = np.array([WS2223, SS23, WS2324, SS24, WS2425 ])
-
-ax, plt = plt.subplots()
-xWerte = np.linspace(0, 1, 100)
 Menge = []
 
 
+# Plotparameter
 def Plotparams(Name, Titel):
     plt.set_ylim(68, 132)
     plt.set_xlim(-0.02, 1.02)
@@ -45,12 +49,13 @@ def Plotparams(Name, Titel):
     ax.show()
     plt.cla()
 
-# Lineare Funktion
+
+# Konstante Funktion für die Eutektikale
 def lin(Para, x): 
-    return Para[0] + x*Para[1] - x*Para[1]
+    return Para
 
 
-# Fitfunktion
+# Fitfunktion mit Fehler für die Eutektikale
 def fit(func, x, y, Name, yError, Farbe, labeln):
     model = odr.Model(func)
     mydata = odr.RealData(x, y, sx= 0.01, sy=yError)
@@ -75,7 +80,7 @@ def Jedes_semester_ein_plot():
             SpezAnteile = Anteile2
         Data = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep=",",header=0, names=SpezAnteile)
         temp = 0
-        for j in SpezAnteile:
+        for j in SpezAnteile: # Mittelwert und Sigma für jeden Wert
             Mittelwert = st.mean(Data[j])
             SigmaTemp = 0
             for k in Data[j]:
@@ -112,6 +117,8 @@ def Benzamid_zusammengefasst_zusammen():
     fit(lin, Anteil[:9], Gesamtdurchschnitt[:9], None, Gesamtsigma[:9], 'black', True)
     Plotparams('Gesamt', f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
 
+
+# Jede Gruppe in einem Plot
 def JedeGruppeEinPlot():
     for i in range(len(Dateien)):
         Zieldata = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep=",",header=0, names=Anteile)
@@ -123,7 +130,7 @@ def JedeGruppeEinPlot():
             Plotparams(f'{Bezeichnung[i]}\\{index} Mikroskop', f'Daten der Gruppe {index}')
 
 
-Jedes_semester_ein_plot()
-# Benzamid_zusammengefasst_zusammen()
-# Benzamid_zusammengefasst_einzeln()
-JedeGruppeEinPlot()
+# Jedes_semester_ein_plot()             # Gibt für jedes Semester einen Plot aus
+JedeGruppeEinPlot()                     # Gibt für jede Gruppe einen Plot aus
+# Benzamid_zusammengefasst_einzeln()    # Gibt die Zusammenfassungen von Semester 1-4 in einem Plot aus
+# Benzamid_zusammengefasst_zusammen()   # Gibt den Mittelwert der Werte von Semester 1-4 in einem Plot aus
