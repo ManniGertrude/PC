@@ -17,7 +17,7 @@ CTable = ['deeppink', 'purple', 'indigo', 'blue', 'cornflowerblue', 'cadetblue',
 
 #Einlesen der Daten und Definition der Gruppen und Stoffe
 Data = pd.read_table(f'{path}\\Daten\\Wasser_SS_25.csv', sep=",", header=0, index_col=0)
-# Data_ideal = pd.read_table(f'{path}\\Daten\\Ideal_SS_25.csv', sep=",", header=0, index_col=0)
+Data_ideal = pd.read_table(f'{path}\\Daten\\Ideal_SS_25.csv', sep=",", header=0, index_col=0)
 Gruppen = ['A1', 'A2', 'A3', 'A4', 'A5','A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5','B6']
 Stoffe = ['Benzoe', 'Salicyl']
 
@@ -83,7 +83,7 @@ def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mi
     ax.grid()
     ax.xaxis.set_major_locator(MultipleLocator(0.00005))
     ax.xaxis.set_minor_locator(MultipleLocator(0.00001))
-    fig.savefig(f'{path}\\PNG\\WS2425 Wasser\\Wasser {Gruppe} {Stoff}.png', dpi=300)
+    fig.savefig(f'{path}\\PNG\\Wasser_SS_25\\Wasser {Gruppe} {Stoff}.png', dpi=300)
     plt.cla()
 
 
@@ -231,7 +231,7 @@ def EineAbfrage(Gruppe, Stoff, Print):
 
 
 # Abfrage für eine Gruppe für beide Stoffe und die ideale Lösung
-def EineGruppe(Gruppe, Print):
+def EineGruppe(Gruppe, Print = True):
     for i in Stoffe:
         EineAbfrage(Gruppe, i, Print)
     Ideal(Gruppe, Print)
@@ -242,8 +242,8 @@ def EineGruppe(Gruppe, Print):
 
 # # Mögliche Auswertmethoden:
 
-EineAbfrage('A5', 'Benzoe', True) # Einzelne Gruppe und einzelner Stoff
-# EineGruppe('A1') # Eine Gruppe und beide Stoffe sowie die ideale Lösung
+# EineAbfrage('A5', 'Benzoe', True) # Einzelne Gruppe und einzelner Stoff
+EineGruppe('B5') # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A1') # Ideale Lösung für eine Gruppe
 
 # AlleAbfragen()  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
