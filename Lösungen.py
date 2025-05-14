@@ -16,8 +16,8 @@ CTable = ['deeppink', 'purple', 'indigo', 'blue', 'cornflowerblue', 'cadetblue',
 
 
 #Einlesen der Daten und Definition der Gruppen und Stoffe
-Data = pd.read_table(f'{path}\\Daten\\Wasser_WS_24-25.csv', sep=",", header=0, index_col=0)
-Data_ideal = pd.read_table(f'{path}\\Daten\\Ideal_WS_24-25.csv', sep=",", header=0, index_col=0)
+Data = pd.read_table(f'{path}\\Daten\\Wasser_SS_25.csv', sep=",", header=0, index_col=0)
+# Data_ideal = pd.read_table(f'{path}\\Daten\\Ideal_SS_25.csv', sep=",", header=0, index_col=0)
 Gruppen = ['A1', 'A2', 'A3', 'A4', 'A5','A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5','B6']
 Stoffe = ['Benzoe', 'Salicyl']
 
@@ -242,8 +242,9 @@ def EineGruppe(Gruppe, Print):
 
 # # Mögliche Auswertmethoden:
 
-# EineAbfrage('A1', 'Benzoe') # Einzelne Gruppe und einzelner Stoff
+EineAbfrage('A5', 'Benzoe', True) # Einzelne Gruppe und einzelner Stoff
 # EineGruppe('A1') # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A1') # Ideale Lösung für eine Gruppe
 
-AlleAbfragen()  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+# AlleAbfragen()  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+
