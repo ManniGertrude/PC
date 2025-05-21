@@ -8,29 +8,23 @@ from matplotlib.ticker import MultipleLocator
 import os
 
 
-global ax, fig
 fig, ax = plt.subplots()
-fig.set_size_inches(6, 4)
+
 path = os.path.dirname(os.path.abspath(__file__))
-# CTable = ['deeppink', 'purple', 'indigo', 'blue', 'cornflowerblue', 'cadetblue', 'lightseagreen', 'seagreen', 'darkorange', 'coral', 'crimson' ]
+CTable = ['deeppink', 'blue', 'seagreen', 'darkorange', 'crimson' ]
+Semester_Names = ['WS_22_23', 'SS_23', 'WS_23_24','WS_24_25', 'SS_25']
 
+Data = pd.DataFrame()
+Data_ideal = pd.DataFrame()
+for i in range(len(Semester_Names)):
+    Data_temp = pd.read_table(f'{path}\\Daten\\Wasser_{Semester_Names[i]}.csv', sep=",", header=0, index_col=0)
+    Data_temp.index = [f'{i+1}_' + str(idx) for idx in Data_temp.index]
+    Data = pd.concat([Data, Data_temp])
+    # Data_ideal_temp = pd.read_table(f'{path}\\Daten\\Ideal_{Semester_Names[i]}.csv', sep=",", header=0, index_col=0)
+    # Data_ideal_temp.index = [f'{i+1}' + str(idx) for idx in Data_ideal_temp.index]
+    # Data_ideal = pd.concat([Data_ideal, Data_ideal_temp])
+ 
 
-#Einlesen der Daten und Definition der Gruppen und Stoffe
-Data1 = pd.read_table(f'{path}\\Daten\\Wasser_WS_24-25.csv', sep=",", header=0, index_col=0)
-Data1.index = ['4_' + str(idx) for idx in Data1.index]
-
-Data2 = pd.read_table(f'{path}\\Daten\\Wasser_SS_25.csv', sep=",", header=0, index_col=0)
-Data2.index = ['5_' + str(idx) for idx in Data2.index]
-
-Data = pd.concat([Data1, Data2])
-
-Data_ideal1 = pd.read_table(f'{path}\\Daten\\Ideal_WS_24-25.csv', sep=",", header=0, index_col=0)
-Data_ideal1.index = ['4_' + str(idx) for idx in Data_ideal1.index]
-
-Data_ideal2 = pd.read_table(f'{path}\\Daten\\Ideal_SS_25.csv', sep=",", header=0, index_col=0)
-Data_ideal2.index = ['5_' + str(idx) for idx in Data_ideal2.index]
-
-Data_ideal = pd.concat([Data_ideal1, Data_ideal2])
 
 Gruppen = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5','B6', 'B7']
 Stoffe = ['Benzoe', 'Salicyl']
@@ -70,40 +64,40 @@ def Fit(x,y,sx,sy):
 
 # Plot der Auswertung samt Konfidenzintervall und Regression
 def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe, Stoff, out, plot, semester):
-    if plot == True:
-        ax.errorbar(Rez_T, ln_x_B, xerr=Rez_T_Error, yerr=ln_x_B_Error, color='navy', capsize=1, linestyle='none', label='Messwerte')
-    # Konfidenzintervalle berechnen
-    xValues = np.linspace(min(Rez_T), max(Rez_T), len(Rez_T))
-    ci = ConfidenceInterval(xValues, out)
-    ci_lower = lin(ci[:, 0], xValues)
-    ci_upper = lin(ci[:, 1], xValues)
-    ax.fill_between(xValues, ci_lower, ci_upper, color='lightblue', alpha=0.3, label='95% Konfidenzintervall')
-    ax.plot(xValues, ci_lower, color='navy', alpha=0.2)
-    ax.plot(xValues, ci_upper, color='navy', alpha=0.2)
-    # Fit-Funktion plotten
-    fy = lin(out.beta, xValues)
-    ax.plot(xValues, fy, c='crimson',label = Replacer(f'({out.beta[0]:.0f}$\pm${out.sd_beta[0]:.0f}$) \cdot T^-$$^1 + $({out.beta[1]:.2f}$\pm${out.sd_beta[1]:.2f}) mit $R^2 =${r2_score(ln_x_B, lin(out.beta, Rez_T)):.3f}'))
-    # Reihenfolge der Legende ändern
-    handles, labels = ax.get_legend_handles_labels() 
-    handles = handles[2:] + handles[:2]
-    labels = labels[2:] + labels[:2]
-    # Plot Parameter
-    plt.xlim(min(Rez_T)-0.000005, max(Rez_T)+0.000005)
-    plt.ylim(min(ln_x_B)-0.05, max(ln_x_B)+0.05)
-    ax.set(xlabel='Reziproke Temperatur / $ K^{-1}$', ylabel=f'Stoffmengen-Logarithmus {Stoff}')
-    fig.suptitle(Replacer(f'1. mol. Lösungsenthalpie $\Delta_LH_B^\infty$ = ({H_mLinf:.0f} $\pm$ {H_mLinf_Error:.0f}) J/mol'), fontsize=12)
-    ax.set_title(Replacer(f'Mischenthalpie $\Delta_MH_B =$ ({Mischenthalpie:.0f} $\pm$ {Mischenthalpie_Error:.0f}) J/mol'))
-    ax.legend(handles, labels, loc='lower left', framealpha=0.2, fontsize=8.5)
-    ax.grid()
-    ax.xaxis.set_major_locator(MultipleLocator(0.00005))
-    ax.xaxis.set_minor_locator(MultipleLocator(0.00001))
-    if semester == '4':
-        fig.savefig(f'{path}\\PNG\\Wasser_WS_24_25\\Wasser {Gruppe} {Stoff}.png', dpi=300)
-    elif semester == '5':
-        fig.savefig(f'{path}\\PNG\\Wasser_SS_25\\Wasser {Gruppe} {Stoff}.png', dpi=300)
-    elif semester == 'Zusammen':
-        fig.savefig(f'{path}\\PNG\\Zusammen_{Stoff}.png', dpi=300)
-    plt.cla()
+    if plot == True: 
+        if semester != 'Zusammen':
+            ax.errorbar(Rez_T, ln_x_B, xerr=Rez_T_Error, yerr=ln_x_B_Error, color='navy', capsize=1, linestyle='none', label='Messwerte')
+        # Konfidenzintervalle berechnen
+        xValues = np.linspace(min(Rez_T), max(Rez_T), len(Rez_T))
+        ci = ConfidenceInterval(xValues, out)
+        ci_lower = lin(ci[:, 0], xValues)
+        ci_upper = lin(ci[:, 1], xValues)
+        ax.fill_between(xValues, ci_lower, ci_upper, color='lightblue', alpha=0.3, label='95% Konfidenzintervall')
+        ax.plot(xValues, ci_lower, color='navy', alpha=0.2)
+        ax.plot(xValues, ci_upper, color='navy', alpha=0.2)
+        # Fit-Funktion plotten
+        fy = lin(out.beta, xValues)
+        ax.plot(xValues, fy, c='crimson',label = Replacer(f'({out.beta[0]:.0f}$\pm${out.sd_beta[0]:.0f}$) \cdot T^-$$^1 + $({out.beta[1]:.2f}$\pm${out.sd_beta[1]:.2f}) mit $R^2 =${r2_score(ln_x_B, lin(out.beta, Rez_T)):.3f}'))
+        # Reihenfolge der Legende ändern
+        handles, labels = ax.get_legend_handles_labels() 
+        handles = handles[2:] + handles[:2]
+        labels = labels[2:] + labels[:2]
+        # Plot Parameter
+        plt.xlim(min(Rez_T)-0.000005, max(Rez_T)+0.000005)
+        plt.ylim(min(ln_x_B)-0.05, max(ln_x_B)+0.05)
+        ax.set(xlabel='Reziproke Temperatur / $ K^{-1}$', ylabel=f'Stoffmengen-Logarithmus {Stoff}')
+        fig.suptitle(Replacer(f'1. mol. Lösungsenthalpie $\Delta_LH_B^\infty$ = ({H_mLinf:.0f} $\pm$ {H_mLinf_Error:.0f}) J/mol'), fontsize=12)
+        ax.set_title(Replacer(f'Mischenthalpie $\Delta_MH_B =$ ({Mischenthalpie:.0f} $\pm$ {Mischenthalpie_Error:.0f}) J/mol'))
+        ax.legend(handles, labels, loc='lower left', framealpha=0.2, fontsize=8.5)
+        ax.grid()
+        ax.xaxis.set_major_locator(MultipleLocator(0.00005))
+        ax.xaxis.set_minor_locator(MultipleLocator(0.00001))
+
+        if semester != 'Zusammen':
+            fig.savefig(f'{path}\\PNG\\Wasser_{Semester_Names[semester-1]}\\Wasser {Gruppe} {Stoff}.png', dpi=300)
+        else:
+            fig.savefig(f'{path}\\PNG\\Zusammen_{Stoff}.png', dpi=300)
+        plt.cla()
 
 
 # Auswertung der wässrigen Lösungen 
@@ -146,7 +140,7 @@ def Auswertung(Gruppe, Stoff, Print, semester):
         # Ideale Löslichkeit
         x_B_id = np.exp(-18000/8.31446*(1/(T_Data)-1/395.5))
         x_B_id_Error = abs(x_B_id*18000*T_Error/(8.31446*(T_Data)**2))
-    FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe, Stoff, out, True, semester)
+    FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe, Stoff, out, False, semester)
     if Print == True:
         print()
         print(f'Gruppe: {Gruppe}, Stoff: {Stoff}')
@@ -156,7 +150,6 @@ def Auswertung(Gruppe, Stoff, Print, semester):
         for i in range(len(x_B_id)):
             print(f'({x_B_id[i]:.4f} \pm {x_B_id_Error[i]:.4f}) bei ({T_Data[i]:.2f} \pm {T_Error[i]:.2f}) K')
         print()
-    
     return [Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe, semester]
 
 
@@ -199,27 +192,23 @@ def Ideal(Gruppe, Print=True):
             print(f'Die exp. Löslichkeit beträgt:   {x_B:.4g} \pm {x_B_lit:.2g}')
             print(f'Die Abweichung des exp. Werts vom Literaturwert beträgt ({100*Abweichung_ideal:.1f} \pm {100*Abweichung_Ideal_Error:.1f})%')
             print()
+        return [x_B, x_B_Error, x_B_lit, x_B_lit_Error, T_ideal, T_Error]
 
 
 # Abfrage für alle Gruppen
-def AlleAbfragen(Print = True):
+def AlleAbfragen(Semesterauswahl = [1, 2, 3, 4, 5], Probegruppe = None, Print = True):
     Salicyl = []
     Benzoe = []
-    for i in Gruppen:
-        for j in Stoffe:
-            if f'4_T({i}_{j[:1]})' in Data.index:
-                Output = Auswertung(i, j, Print, '4')
-                if j == 'Salicyl':
-                    Salicyl.append(Output)
-                elif j == 'Benzoe':
-                    Benzoe.append(Output)
-            if f'5_T({i}_{j[:1]})' in Data.index:
-                Output = Auswertung(i, j, Print, '5')
-                if j == 'Salicyl':
-                    Salicyl.append(Output)
-                elif j == 'Benzoe':
-                    Benzoe.append(Output)
-        Ideal(i, Print)
+    for k in Semesterauswahl:
+        for i in Gruppen:
+            for j in Stoffe:
+                if f'{k}_T({i}_{j[:1]})' in Data.index:
+                    Output = Auswertung(i, j, Print, k)
+                    if j == 'Salicyl':
+                        Salicyl.append(Output)
+                    elif j == 'Benzoe':
+                        Benzoe.append(Output)
+            Ideal(i, Print)
     # Plot für alle Messwerte, Wasser
     Name = ['Salicyl', 'Benzoe']
     for j in range(2):
@@ -227,15 +216,18 @@ def AlleAbfragen(Print = True):
             Stoff = Salicyl
         elif j == 1:
             Stoff = Benzoe
+        for k in Semesterauswahl:
+            plt.errorbar([],[], color=CTable[k-1], capsize=1, label=f'{Semester_Names[k-1]}', marker = '+', linestyle='none', markersize=12)            
         for i in range(len(Stoff)):
-            if f'{Stoff[i][9]}_T({Stoff[i][8]}_{Name[j][:1]})' != '5_T(B4_B)':
-                plt.errorbar(Stoff[i][0], Stoff[i][1], xerr=Stoff[i][2], yerr=Stoff[i][3], capsize=1.5, linestyle='none', color='black')  #CTable[i], , label=f'{Stoff[i][9]}_{Stoff[i][8]}'
+            if f'{Stoff[i][9]}_T({Stoff[i][8]}_{Name[j][:1]})' == Probegruppe:
+                plt.errorbar(Stoff[i][0], Stoff[i][1], xerr=Stoff[i][2], yerr=Stoff[i][3], capsize=1.5, linestyle='none', color='black', zorder=2) 
             else:
-                plt.errorbar(Stoff[i][0], Stoff[i][1], xerr=Stoff[i][2], yerr=Stoff[i][3], capsize=1.5, linestyle='none', color='crimson') # , label=f'{Stoff[i][9]}_{Stoff[i][8]}'
+                plt.errorbar(Stoff[i][0], Stoff[i][1], xerr=Stoff[i][2], yerr=Stoff[i][3], capsize=1, linestyle='none', color=CTable[Stoff[i][9]-1], zorder=1, linewidth=1)
         ln_x_B = np.concatenate([Stoff[i][1] for i in range(len(Stoff))])
         ln_x_B_Error = np.concatenate([Stoff[i][3] for i in range(len(Stoff))])
         Rez_T = np.concatenate([Stoff[i][0] for i in range(len(Stoff))])
         Rez_T_Error = np.concatenate([Stoff[i][2] for i in range(len(Stoff))])
+
         out = Fit(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error)
         H_mLinf = -out.beta[0]*8.314
         H_mLinf_Error = out.sd_beta[0]*8.314
@@ -244,9 +236,19 @@ def AlleAbfragen(Print = True):
         elif j == 1:
             Mischenthalpie = H_mLinf - 13800
         Mischenthalpie_Error = H_mLinf_Error
-        print(len(Rez_T), Name[j])
         FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, 'Zusammen', Name[j], out, True, 'Zusammen')
-        
+    plt.close()
+    # Plot für die ideale Löslichkeit
+    Ideal_Bulk = []
+    for i in Gruppen:
+        for k in range(len(Semester_Names)):
+            if f'{k+1}_T({i}_{Stoffe[0][:1]})' in Data_ideal.index:
+                Ideal_Bulk.append(Ideal(f'{k+1}_T({i}_{Stoffe[0][:1]})'), False)
+                
+    for i in range(len(Ideal_Bulk)):
+        plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][0], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][1], capsize=1.5, linestyle='none', color='black')
+        plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][2], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][3], capsize=1.5, linestyle='none', color='crimson')
+    plt.savefig(f'{path}\\PNG\\Zusammen_Ideal.png')
     
 
 # Abfrage für eine Gruppe, Wasser
@@ -271,8 +273,8 @@ def EineGruppe(Gruppe, semester, Print = True):
 # # Mögliche Auswertmethoden:
 
 # EineAbfrage('A5', 'Benzoe', True) # Einzelne Gruppe und einzelner Stoff
-EineGruppe('B4', '5') # Eine Gruppe und beide Stoffe sowie die ideale Lösung
+# EineGruppe('B4', '5') # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A1') # Ideale Lösung für eine Gruppe
 
-# AlleAbfragen(False)  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+AlleAbfragen([1, 2, 3, 4, 5], '5_T(B4_B)', False)  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 
