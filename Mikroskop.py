@@ -21,9 +21,9 @@ Anteile2 = ['E067', 'E176', 'E301', 'E392', 'E491', 'E600', 'E660', 'E750', 'E85
 
 
 # Dateinamen und Bezeichnungen
-Dateien = ['Mikroskop_WS_22-23', 'Mikroskop_SS_23', 'Mikroskop_WS_23-24', 'Mikroskop_SS_24', 'Mikroskop_WS_24-25']
-Bezeichnung = ['WS 22-23', 'SS 23', 'WS 23-24', 'SS 24', 'WS 24-25']
-colortable = ['sienna', 'darkgoldenrod', 'darkolivegreen', 'steelblue', 'darkmagenta']
+Dateien = ['Mikroskop_WS_22-23', 'Mikroskop_SS_23', 'Mikroskop_WS_23-24', 'Mikroskop_SS_24', 'Mikroskop_WS_24-25', 'Mikroskop_SS_25']
+Bezeichnung = ['WS 22-23', 'SS 23', 'WS 23-24', 'SS 24', 'WS 24-25', 'SS 25']
+colortable = ['sienna', 'darkgoldenrod', 'darkolivegreen', 'steelblue', 'darkmagenta', 'crimson']
 
 
 # Leere Listen für die Werte
@@ -32,8 +32,9 @@ SS23 = np.zeros(len(Anteile))
 WS2324 = np.zeros(len(Anteile))
 SS24 = np.zeros(len(Anteile))
 WS2425 = np.zeros(len(Anteile))
-Mittelwertliste = np.array([WS2223, SS23, WS2324, SS24, WS2425])
-Sigma = np.array([WS2223, SS23, WS2324, SS24, WS2425 ])
+SS25 = np.zeros(len(Anteile))
+Mittelwertliste = np.array([WS2223, SS23, WS2324, SS24, WS2425, SS25])
+Sigma = np.array([WS2223, SS23, WS2324, SS24, WS2425, SS25])
 Menge = []
 
 
@@ -72,7 +73,7 @@ def fit(func, x, y, Name, yError, Farbe, labeln):
 # Jedes Semester einzeln in einem Plot
 def Jedes_semester_ein_plot():
     for i in range(len(Dateien)):
-        if i < 4:
+        if i != 4:
             SpezAnteil = Anteil
             SpezAnteile = Anteile
         else:
