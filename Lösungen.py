@@ -140,7 +140,7 @@ def Auswertung(Gruppe, Stoff, Print, semester):
         # Ideale Löslichkeit
         x_B_id = np.exp(-18000/8.31446*(1/(T_Data)-1/395.5))
         x_B_id_Error = abs(x_B_id*18000*T_Error/(8.31446*(T_Data)**2))
-    FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe, Stoff, out, False, semester)
+    FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe, Stoff, out, Print, semester)
     if Print == True:
         print()
         print(f'Gruppe: {Gruppe}, Stoff: {Stoff}')
@@ -276,5 +276,5 @@ def EineGruppe(Gruppe, semester, Print = True):
 # EineGruppe('B4', '5') # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A1') # Ideale Lösung für eine Gruppe
 
-AlleAbfragen([1, 2, 3, 4, 5], Print=False)  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+AlleAbfragen([1, 2, 3, 4, 5], Print=True)  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 
