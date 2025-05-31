@@ -10,57 +10,71 @@ import os
 path = os.path.dirname(os.path.abspath(__file__))
 fig, ax = plt.subplots()
 xWerte = np.linspace(0, 1, 100)
-
-
-# Stoffmengenanteile Acetanilid - Benzamid (x-Achse)
-Anteil = [0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 0.000, 0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000]
-Anteile = ['E122', 'E199', 'E290', 'E430', 'E500', 'E600', 'E700', 'E800', 'E900', 'L000', 'L122', 'L199', 'L290', 'L430', 'L500', 'L600', 'L700', 'L800', 'L900', 'L1000']
-# Stoffmengenanteile Acetanilid - Benzil (x-Achse)
-Anteil2 = [0.067, 0.176, 0.301, 0.392, 0.491, 0.600, 0.660, 0.750, 0.851, 0.000, 0.067, 0.176, 0.301, 0.392, 0.491, 0.600, 0.660, 0.750, 0.851, 1.000]	
-Anteile2 = ['E067', 'E176', 'E301', 'E392', 'E491', 'E600', 'E660', 'E750', 'E851', 'L000', 'L067', 'L176', 'L301', 'L392', 'L491', 'L600', 'L660', 'L750', 'L851', 'L1000']
-
-
-# Dateinamen und Bezeichnungen
-Dateien = ['Mikroskop_WS_22-23', 'Mikroskop_SS_23', 'Mikroskop_WS_23-24', 'Mikroskop_SS_24', 'Mikroskop_WS_24-25', 'Mikroskop_SS_25']
-Bezeichnung = ['WS 22-23', 'SS 23', 'WS 23-24', 'SS 24', 'WS 24-25', 'SS 25']
 colortable = ['sienna', 'darkgoldenrod', 'darkolivegreen', 'steelblue', 'darkmagenta', 'crimson']
 
 
-# Leere Listen für die Werte
-WS2223 = np.zeros(len(Anteile))
-SS23 = np.zeros(len(Anteile))
-WS2324 = np.zeros(len(Anteile))
-SS24 = np.zeros(len(Anteile))
-WS2425 = np.zeros(len(Anteile))
-SS25 = np.zeros(len(Anteile))
-Mittelwertliste = np.array([WS2223, SS23, WS2324, SS24, WS2425, SS25])
-Sigma = np.array([WS2223, SS23, WS2324, SS24, WS2425, SS25])
-Menge = []
+# Stoffmengenanteile Acetanilid - Benzamid (x-Achse)
+Anteil_Bd = [0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 0.000, 0.122, 0.199, 0.290, 0.430, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000]
+# Stoffmengenanteile Acetanilid - Benzil (x-Achse)
+Anteil_Bl = [0.067, 0.176, 0.301, 0.392, 0.491, 0.600, 0.660, 0.750, 0.851, 0.000, 0.067, 0.176, 0.301, 0.392, 0.491, 0.600, 0.660, 0.750, 0.851, 1.000]	
+
+Anteile = ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9', 'LX']
+
+# Dateinamen und Bezeichnungen
+Dateien = []
+for files in os.listdir(f'{path}\\Daten'):
+    if files[:10] == 'Mikroskop_':
+        Dateien.append(files[:-4])
+Bezeichnung = [Dateien[i][10:] for i in range(len(Dateien))]
+
+
+data_dict = {}
+for Datei in Dateien:
+    Data = pd.read_csv(f'{path}\\Daten\\{Datei}.csv', sep=",", header=0, names=Anteile)
+    for index, row in Data.iterrows():
+        index = index.replace('Bl', 'Benzil').replace('Bd', 'Benzamid')
+        data_dict.update({f'{Datei[10:]}_{index}': row.to_list()})
+
+
+def get_mean_std():
+    mean_std = {key: {Stoff: [[],[], 0]for Stoff in ['Benzamid', 'Benzil']} for key in Bezeichnung}
+    for semester in range(len(Bezeichnung)):
+        for Stoff in ['Benzamid', 'Benzil']:
+            semester_list = []
+            for Data in data_dict:
+                index = Data.split('_')
+                if f'{index[0]}_{index[1]}' == Bezeichnung[semester] and index[3] == Stoff:
+                    semester_list.append(data_dict[Data])
+            if len(semester_list) != 0:
+                mean_std[Bezeichnung[semester]][Stoff][0] = list(np.mean(semester_list, axis=0))
+                mean_std[Bezeichnung[semester]][Stoff][1] = list(np.std(semester_list, axis=0))
+                mean_std[Bezeichnung[semester]]['len'] = len(semester_list)
+    return mean_std
 
 
 # Plotparameter
-def Plotparams(Name, Titel):
-    plt.set_ylim(68, 132)
-    plt.set_xlim(-0.02, 1.02)
-    plt.set(xlabel='Stoffkonzentration $x_B$', ylabel='Temperatur in$^\circ C$')
+def Plotparams(Name, Titel, minmax = [68, 132], legend=True):
+    plt.ylim(minmax[0]-3, minmax[1]+3)
+    plt.xlim(-0.02, 1.02)
+    plt.xlabel('Stoffkonzentration $x_B$')
+    plt.ylabel('Temperatur in$^\circ C$')
     plt.legend()
     plt.grid()
-    plt.set_title(Titel)
-    ax.savefig(f'{path}\\PNG\\Mikroskop\\{Name}.png')
-    ax.show()
+    plt.title(Titel)
+    plt.savefig(f'{path}\\PNG\\Mikroskop\\{Name}.png')
     plt.cla()
 
 
 # Konstante Funktion für die Eutektikale
 def lin(Para, x): 
-    return Para
+    return Para * np.ones(len(x))
 
 
 # Fitfunktion mit Fehler für die Eutektikale
 def fit(func, x, y, Name, yError, Farbe, labeln):
     model = odr.Model(func)
     mydata = odr.RealData(x, y, sx= 0.01, sy=yError)
-    myodr = odr.ODR(mydata, model, beta0=[80.0, 0], maxit=1000)
+    myodr = odr.ODR(mydata, model, beta0=[80.0], maxit=1000)
     out = myodr.run()
     fy = func(out.beta, xWerte)
     if labeln == True:
@@ -70,68 +84,95 @@ def fit(func, x, y, Name, yError, Farbe, labeln):
     return out
 
 
-# Jedes Semester einzeln in einem Plot
-def Jedes_semester_ein_plot():
-    for i in range(len(Dateien)):
-        if i != 4:
-            SpezAnteil = Anteil
-            SpezAnteile = Anteile
-        else:
-            SpezAnteil = Anteil2
-            SpezAnteile = Anteile2
-        Data = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep=",",header=0, names=SpezAnteile)
-        temp = 0
-        for j in SpezAnteile: # Mittelwert und Sigma für jeden Wert
-            Mittelwert = st.mean(Data[j])
-            SigmaTemp = 0
-            for k in Data[j]:
-                SigmaTemp = SigmaTemp + (k-Mittelwert)**2
-            Sigma[i][temp] = np.sqrt(SigmaTemp/len(Data[j]))
-            Mittelwertliste[i][temp] = Mittelwert
-            temp += 1
-        if i < 4:
-            Menge.append(len(Data))
-        fit(lin, SpezAnteil[:9], Mittelwertliste[i][:9], Dateien[i][10:], Sigma[i][:9], colortable[i], True)
-        plt.errorbar(SpezAnteil, Mittelwertliste[i], xerr=0.01, yerr=Sigma[i], color = colortable[i], capsize=3, linestyle='none')
-        Plotparams(Dateien[i], f'{len(Data[j])} Messungen {Bezeichnung[i]}')
-
-
-# Semester 1-4 in einen Plot übereinander gelegt
-def Benzamid_zusammengefasst_einzeln():
-    for i in range(4):
-        fit(lin, Anteil[:9], Mittelwertliste[i][:9], None, Sigma[i][:9], colortable[i], False)
-        plt.errorbar(Anteil, Mittelwertliste[i], xerr=0.01, yerr=Sigma[i], color=colortable[i], capsize=3, linestyle='none', label=Bezeichnung[i])
-        X_Y_Spline = make_interp_spline(Anteil[9:], Mittelwertliste[i][9:])
-        Y_ = X_Y_Spline(xWerte)
-        plt.plot(xWerte, Y_, color=colortable[i], alpha=0.8)
-    Plotparams('Alle', f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
-
-
-# Alle Werte Semester 1-4 in zusammengefasst in einem Plot
-def Benzamid_zusammengefasst_zusammen():
-    Gesamtdurchschnitt = np.zeros(len(Anteile))
-    Gesamtsigma = np.zeros(len(Anteile))
-    for i in range(4):
-        Gesamtdurchschnitt = Gesamtdurchschnitt + Mittelwertliste[i]*(Menge[i]/sum(Menge))
-        Gesamtsigma = Gesamtsigma + Sigma[i]*(Menge[i]/sum(Menge))
-    plt.errorbar(Anteil, Gesamtdurchschnitt, xerr=0.01, yerr=Gesamtsigma[i], color='black', capsize=3, linestyle='none', label=None)
-    fit(lin, Anteil[:9], Gesamtdurchschnitt[:9], None, Gesamtsigma[:9], 'black', True)
-    Plotparams('Gesamt', f'{sum(Menge)} Messungen von {Bezeichnung[0]} bis {Bezeichnung[-1]}')
+def eine_gruppe_ein_plot(Semester, Gruppe):
+    for Stoff in ['Benzil', 'Benzamid']:
+        if f'{Semester}_{Gruppe}_{Stoff}' in data_dict:
+            Data = data_dict[f'{Semester}_{Gruppe}_{Stoff}']
+        else: 
+            continue
+        if Stoff == 'Benzil':
+            Anteil = Anteil_Bl
+        elif Stoff == 'Benzamid':
+            Anteil = Anteil_Bd
+        plt.errorbar(Anteil[9:], Data[9:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
+        plt.errorbar(Anteil[:9], Data[:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
+        fit(lin, Anteil[:9], Data[:9], None, [0.1]*9, 'purple', True)
+        Plotparams(f'{Semester[0:2]} {Semester[3:]}\\{Gruppe}_{Stoff}_Mikroskop', f'Daten der Gruppe {Gruppe} aus dem {Semester}\nAcetanilid - {Stoff}')
 
 
 # Jede Gruppe in einem Plot
-def JedeGruppeEinPlot():
-    for i in range(len(Dateien)):
-        Zieldata = pd.read_csv(f'{path}\\Daten\\{Dateien[i]}.csv', sep=",",header=0, names=Anteile)
-        for index, row in Zieldata.iterrows():
-            RowData = row.to_list()
-            plt.errorbar(Anteil2[9:], RowData[9:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
-            plt.errorbar(Anteil2[:9], RowData[:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
-            fit(lin, Anteil[:9], RowData[:9], None, [0.1]*9, 'purple', True)
-            Plotparams(f'{Bezeichnung[i]}\\{index} Mikroskop', f'Daten der Gruppe {index}')
+def jede_gruppe_ein_plot():
+    for Data in data_dict:
+        minmax = [min(data_dict[Data]), max(data_dict[Data])]
+        index = Data.split('_')
+        if index[3] == 'Benzil':
+            Anteil = Anteil_Bl
+        elif index[3] == 'Benzamid':
+            Anteil = Anteil_Bd
+
+        plt.errorbar(Anteil[9:], data_dict[Data][9:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
+        plt.errorbar(Anteil[:9], data_dict[Data][:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
+        fit(lin, Anteil[:9], data_dict[Data][:9], None, [0.1]*9, 'purple', True)
+        if not os.path.exists(f'{path}\\PNG\\Mikroskop\\{index[0]} {index[1]}'):
+            os.makedirs(f'{path}\\PNG\\Mikroskop\\{index[0]} {index[1]}')
+        Plotparams(f'{index[0]} {index[1]}\\{index[2]}_{index[3]}_Mikroskop', f'Daten der Gruppe {index[2]} aus dem {index[0]} {index[1]}\nAcetanilid - {index[3]}', minmax)
 
 
-# Jedes_semester_ein_plot()             # Gibt für jedes Semester einen Plot aus
-JedeGruppeEinPlot()                     # Gibt für jede Gruppe einen Plot aus
-# Benzamid_zusammengefasst_einzeln()    # Gibt die Zusammenfassungen von Semester 1-4 in einem Plot aus
-# Benzamid_zusammengefasst_zusammen()   # Gibt den Mittelwert der Werte von Semester 1-4 in einem Plot aus
+
+# Jedes Semester einzeln in einem Plot pro Stoff
+def jedes_semester_ein_plot():
+    for semester in range(len(Bezeichnung)):
+        minmax = [100, 100]
+        for Stoff in ['Benzamid', 'Benzil']:
+            if mean_std[Bezeichnung[semester]][Stoff][0] != []:
+                for Data in data_dict:
+                    index = Data.split('_')
+                    if Stoff == 'Benzamid':
+                        Anteil = Anteil_Bd
+                    elif Stoff == 'Benzil':
+                        Anteil = Anteil_Bl
+                    if f'{index[0]}_{index[1]}' == Bezeichnung[semester] and index[3] == Stoff:
+                        plt.errorbar(Anteil[9:], data_dict[Data][9:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none')
+                        plt.errorbar(Anteil[:9], data_dict[Data][:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none')
+                        minmax[0] = min(minmax[0], np.min(data_dict[Data]))
+                        minmax[1] = max(minmax[1], np.max(data_dict[Data]))
+                # Berechnung des Mittelwerts und der Standardabweichung für jeden Wert   
+                fit(lin, Anteil[:9], mean_std[Bezeichnung[semester]][Stoff][0][:9], None, mean_std[Bezeichnung[semester]][Stoff][1][:9], 'purple', True)
+                Plotparams(f'{Bezeichnung[semester]}_{Stoff}', f'Daten des {Bezeichnung[semester]} Semesters\nAcetanilid - {Stoff}', minmax, False)
+
+
+
+def jeder_stoff_ein_plot():
+    for Stoff in ['Benzamid', 'Benzil']:
+        minmax = [100, 100]
+        if Stoff == 'Benzamid':
+            Anteil = Anteil_Bd
+        elif Stoff == 'Benzil':
+            Anteil = Anteil_Bl
+        for Data in data_dict:
+            index = Data.split('_')
+            if index[3] == Stoff:
+                plt.errorbar(Anteil[9:], data_dict[Data][9:], xerr=0.01, yerr=1, color='blue', capsize=3, linestyle='none', alpha=0.1, zorder = 2)
+                plt.errorbar(Anteil[:9], data_dict[Data][:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', alpha=0.1, zorder = 2)
+                minmax[0] = min(minmax[0], np.min(data_dict[Data]))
+                minmax[1] = max(minmax[1], np.max(data_dict[Data]))
+        mean = []
+        Sigma = []
+        Len = 0
+        for semester in range(len(Bezeichnung)):
+            if mean_std[Bezeichnung[semester]][Stoff][0] != []:
+                mean.append(mean_std[Bezeichnung[semester]][Stoff][0])
+                Sigma.append(np.array(mean_std[Bezeichnung[semester]][Stoff][1])**2)
+                Len += mean_std[Bezeichnung[semester]]['len']
+        plt.errorbar(Anteil[9:], np.mean(mean, axis=0)[9:], xerr=0.01, yerr=np.sqrt(np.mean(Sigma, axis=0))[9:], color='navy',    capsize=4, linewidth = 1.5, linestyle='none', label='Liquidus', zorder = 6)
+        plt.errorbar(Anteil[:9], np.mean(mean, axis=0)[:9], xerr=0.01, yerr=np.sqrt(np.mean(Sigma, axis=0))[:9], color='crimson', capsize=4, linewidth = 1.5, linestyle='none', label='Eutektikale', zorder = 6)
+        fit(lin, Anteil[:9], np.mean(mean, axis=0)[:9], None, np.sqrt(np.mean(Sigma, axis=0))[:9], 'purple', True)
+        Plotparams(f'Alle {Stoff}', f'{Len} Messungen\nAcetanilid - {Stoff}', minmax, True)
+
+
+if __name__ == '__main__':
+    eine_gruppe_ein_plot('SS_25', 'A5')        # Beispiel für eine Gruppe
+    jede_gruppe_ein_plot()                     # Gibt für jede Gruppe einen Plot aus
+    mean_std = get_mean_std()
+    jedes_semester_ein_plot()                  # Gibt für jedes Semester einen Plot aus
+    jeder_stoff_ein_plot()                     # Gibt die Zusammenfassungen von Semester 1-4 in einem Plot aus
