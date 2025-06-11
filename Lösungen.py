@@ -273,8 +273,8 @@ def EineGruppe(Gruppe, semester, Print = True):
 # # Mögliche Auswertmethoden:
 
 # EineAbfrage('A5', 'Benzoe', True) # Einzelne Gruppe und einzelner Stoff
-# EineGruppe('B4', '5') # Eine Gruppe und beide Stoffe sowie die ideale Lösung
-# Ideal('A1') # Ideale Lösung für eine Gruppe
+EineGruppe('A2', 5) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
+# Ideal('A2', 5) # Ideale Lösung für eine Gruppe
 
-AlleAbfragen([1, 2, 3, 4, 5], Print=True)  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+# AlleAbfragen([1, 2, 3, 4, 5], Print=True)  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 
