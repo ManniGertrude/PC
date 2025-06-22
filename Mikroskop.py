@@ -142,7 +142,7 @@ def jedes_semester_ein_plot():
 
 
 
-def jeder_stoff_ein_plot():
+def jeder_stoff_ein_plot(Probegruppe = 'SS_25_A1'):
     for Stoff in ['Benzamid', 'Benzil']:
         minmax = [100, 100]
         if Stoff == 'Benzamid':
@@ -167,12 +167,17 @@ def jeder_stoff_ein_plot():
         plt.errorbar(Anteil[9:], np.mean(mean, axis=0)[9:], xerr=0.01, yerr=np.sqrt(np.mean(Sigma, axis=0))[9:], color='navy',    capsize=4, linewidth = 1.5, linestyle='none', label='Liquidus', zorder = 6)
         plt.errorbar(Anteil[:9], np.mean(mean, axis=0)[:9], xerr=0.01, yerr=np.sqrt(np.mean(Sigma, axis=0))[:9], color='crimson', capsize=4, linewidth = 1.5, linestyle='none', label='Eutektikale', zorder = 6)
         fit(lin, Anteil[:9], np.mean(mean, axis=0)[:9], None, np.sqrt(np.mean(Sigma, axis=0))[:9], 'purple', True)
+        if Probegruppe != None and f'{Probegruppe}_{Stoff}' in data_dict:
+            Probegruppen_Data = data_dict[f'{Probegruppe}_{Stoff}']
+            print(Anteil, Probegruppen_Data)
+            plt.errorbar(Anteil[9:], Probegruppen_Data[9:], xerr=0.01, yerr=1, linestyle='none', color='black', capsize=3, capthick=2, zorder = 12, label=f'Probegruppe {Probegruppe}')
+            plt.errorbar(Anteil[:9], Probegruppen_Data[:9], xerr=0.01, yerr=1, linestyle='none', color='black', capsize=3, capthick=2, zorder = 12)
         Plotparams(f'Alle {Stoff}', f'{Len} Messungen\nAcetanilid - {Stoff}', minmax, True)
 
 
 if __name__ == '__main__':
-    eine_gruppe_ein_plot('SS_25', 'A5')        # Beispiel für eine Gruppe
-    jede_gruppe_ein_plot()                     # Gibt für jede Gruppe einen Plot aus
+    # eine_gruppe_ein_plot('SS_25', 'A5')        # Beispiel für eine Gruppe
+    # jede_gruppe_ein_plot()                     # Gibt für jede Gruppe einen Plot aus
     mean_std = get_mean_std()
-    jedes_semester_ein_plot()                  # Gibt für jedes Semester einen Plot aus
-    jeder_stoff_ein_plot()                     # Gibt die Zusammenfassungen von Semester 1-4 in einem Plot aus
+    # jedes_semester_ein_plot()                  # Gibt für jedes Semester einen Plot aus
+    jeder_stoff_ein_plot('SS_25_A1')                     # Gibt die Zusammenfassungen von Semester 1-4 in einem Plot aus

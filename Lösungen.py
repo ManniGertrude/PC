@@ -13,6 +13,7 @@ fig, ax = plt.subplots()
 path = os.path.dirname(os.path.abspath(__file__))
 CTable = ['deeppink', 'blue', 'seagreen', 'darkorange', 'crimson' ]
 Semester_Names = ['WS_22_23', 'SS_23', 'WS_23_24','WS_24_25', 'SS_25']
+Semester_Names_ideal = [None, None, None, 'WS_24_25', 'SS_25']
 
 Data = pd.DataFrame()
 Data_ideal = pd.DataFrame()
@@ -20,9 +21,11 @@ for i in range(len(Semester_Names)):
     Data_temp = pd.read_table(f'{path}\\Daten\\Wasser_{Semester_Names[i]}.csv', sep=",", header=0, index_col=0)
     Data_temp.index = [f'{i+1}_' + str(idx) for idx in Data_temp.index]
     Data = pd.concat([Data, Data_temp])
-    # Data_ideal_temp = pd.read_table(f'{path}\\Daten\\Ideal_{Semester_Names[i]}.csv', sep=",", header=0, index_col=0)
-    # Data_ideal_temp.index = [f'{i+1}' + str(idx) for idx in Data_ideal_temp.index]
-    # Data_ideal = pd.concat([Data_ideal, Data_ideal_temp])
+for i in range(len(Semester_Names_ideal)):
+    if Semester_Names_ideal[i] is not None:
+        Data_ideal_temp = pd.read_table(f'{path}\\Daten\\Ideal_{Semester_Names_ideal[i]}.csv', sep=",", header=0, index_col=0)
+        Data_ideal_temp.index = [f'{i+1}_' + str(idx) for idx in Data_ideal_temp.index]
+        Data_ideal = pd.concat([Data_ideal, Data_ideal_temp])
  
 
 
@@ -72,9 +75,9 @@ def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mi
         ci = ConfidenceInterval(xValues, out)
         ci_lower = lin(ci[:, 0], xValues)
         ci_upper = lin(ci[:, 1], xValues)
-        ax.fill_between(xValues, ci_lower, ci_upper, color='lightblue', alpha=0.3, label='95% Konfidenzintervall')
-        ax.plot(xValues, ci_lower, color='navy', alpha=0.2)
-        ax.plot(xValues, ci_upper, color='navy', alpha=0.2)
+        # ax.fill_between(xValues, ci_lower, ci_upper, color='lightblue', alpha=0.3, label='95% Konfidenzintervall')
+        # ax.plot(xValues, ci_lower, color='navy', alpha=0.2)
+        # ax.plot(xValues, ci_upper, color='navy', alpha=0.2)
         # Fit-Funktion plotten
         fy = lin(out.beta, xValues)
         ax.plot(xValues, fy, c='crimson',label = Replacer(f'({out.beta[0]:.0f}$\pm${out.sd_beta[0]:.0f}$) \cdot T^-$$^1 + $({out.beta[1]:.2f}$\pm${out.sd_beta[1]:.2f}) mit $R^2 =${r2_score(ln_x_B, lin(out.beta, Rez_T)):.3f}'))
@@ -154,9 +157,9 @@ def Auswertung(Gruppe, Stoff, Print, semester):
 
 
 # Ideale Löslichkeit für eine Gruppe 
-def Ideal(Gruppe, Print=True):
-    if Gruppe in Data_ideal.index:
-        IdealData = Data_ideal.loc[Gruppe].values
+def Ideal(Gruppe, semester,  Print=True):
+    if f'{semester}_{Gruppe}' in Data_ideal.index:
+        IdealData = Data_ideal.loc[f'{semester}_{Gruppe}'].values
         T_ideal = IdealData[0] + 273.15     # K
         M_Tara = IdealData[1]               # g
         M_brutto = IdealData[2]             # g
@@ -208,9 +211,10 @@ def AlleAbfragen(Semesterauswahl = [1, 2, 3, 4, 5], Probegruppe = None, Print = 
                         Salicyl.append(Output)
                     elif j == 'Benzoe':
                         Benzoe.append(Output)
-            Ideal(i, Print)
+            Ideal(i, k, Print)
     # Plot für alle Messwerte, Wasser
     Name = ['Salicyl', 'Benzoe']
+    lin_vals = np.linspace(0.0031, 0.0033, 10)
     for j in range(2):
         if j == 0:
             Stoff = Salicyl
@@ -219,9 +223,13 @@ def AlleAbfragen(Semesterauswahl = [1, 2, 3, 4, 5], Probegruppe = None, Print = 
         for k in Semesterauswahl:
             plt.errorbar([],[], color=CTable[k-1], capsize=1, label=f'{Semester_Names[k-1]}', marker = '+', linestyle='none', markersize=12)            
         for i in range(len(Stoff)):
-            if f'{Stoff[i][9]}_T({Stoff[i][8]}_{Name[j][:1]})' == Probegruppe:
+            if f'{Stoff[i][9]}_T({Stoff[i][8]}_{Name[j][:1]})' in Probegruppe:
                 plt.errorbar(Stoff[i][0], Stoff[i][1], xerr=Stoff[i][2], yerr=Stoff[i][3], capsize=1.5, linestyle='none', color='black', zorder=2) 
+                out = Fit(Stoff[i][0], Stoff[i][1], Stoff[i][2], Stoff[i][3])
+                plt.plot(lin_vals, lin(out.beta, lin_vals), color='black', label=f'{Stoff[i][9]} {Stoff[i][8]}')
             else:
+                out = Fit(Stoff[i][0], Stoff[i][1], Stoff[i][2], Stoff[i][3])
+                plt.plot(lin_vals, lin(out.beta, lin_vals), color=CTable[Stoff[i][9]-1], alpha = 0.2, zorder=0)
                 plt.errorbar(Stoff[i][0], Stoff[i][1], xerr=Stoff[i][2], yerr=Stoff[i][3], capsize=1, linestyle='none', color=CTable[Stoff[i][9]-1], zorder=1, linewidth=1)
         ln_x_B = np.concatenate([Stoff[i][1] for i in range(len(Stoff))])
         ln_x_B_Error = np.concatenate([Stoff[i][3] for i in range(len(Stoff))])
@@ -239,16 +247,17 @@ def AlleAbfragen(Semesterauswahl = [1, 2, 3, 4, 5], Probegruppe = None, Print = 
         FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, 'Zusammen', Name[j], out, True, 'Zusammen')
     plt.close()
     # Plot für die ideale Löslichkeit
-    Ideal_Bulk = []
-    for i in Gruppen:
-        for k in range(len(Semester_Names)):
-            if f'{k+1}_T({i}_{Stoffe[0][:1]})' in Data_ideal.index:
-                Ideal_Bulk.append(Ideal(f'{k+1}_T({i}_{Stoffe[0][:1]})'), False)
+    # Ideal_Bulk = []
+    # for i in Gruppen:
+    #     for k in range(len(Semester_Names)):
+    #         if f'{k+1}_{i}' in Data_ideal.index:
+    #             Ideal_Bulk.append(Data_ideal(k+1, i, False))
                 
-    for i in range(len(Ideal_Bulk)):
-        plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][0], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][1], capsize=1.5, linestyle='none', color='black')
-        plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][2], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][3], capsize=1.5, linestyle='none', color='crimson')
-    plt.savefig(f'{path}\\PNG\\Zusammen_Ideal.png')
+    # for i in range(len(Ideal_Bulk)):
+    #     print(Ideal_Bulk)
+    #     plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][0], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][1], capsize=1.5, linestyle='none', color='black')
+    #     plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][2], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][3], capsize=1.5, linestyle='none', color='crimson')
+    # plt.savefig(f'{path}\\PNG\\Zusammen_Ideal.png')
     
 
 # Abfrage für eine Gruppe, Wasser
@@ -264,7 +273,7 @@ def EineAbfrage(Gruppe, Stoff, Print, semester):
 def EineGruppe(Gruppe, semester, Print = True):
     for i in Stoffe:
         EineAbfrage(Gruppe, i, Print, semester)
-    Ideal(Gruppe, Print)
+    Ideal(Gruppe, semester, Print)
 
 
 
@@ -273,8 +282,8 @@ def EineGruppe(Gruppe, semester, Print = True):
 # # Mögliche Auswertmethoden:
 
 # EineAbfrage('A5', 'Benzoe', True) # Einzelne Gruppe und einzelner Stoff
-EineGruppe('B1', 5) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
-# Ideal('A2', 5) # Ideale Lösung für eine Gruppe
+# EineGruppe('A1', 5) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
+# Ideal('B1', 5, True) # Ideale Lösung für eine Gruppe
 
-AlleAbfragen([ 4, 5], Print=True, Probegruppe='5_T(B1_S)')  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+AlleAbfragen([4, 5], Print=True, Probegruppe=['5_T(A1_B)', '5_T(A1_S)'])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 
