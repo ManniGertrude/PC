@@ -247,17 +247,17 @@ def AlleAbfragen(Semesterauswahl = [1, 2, 3, 4, 5], Probegruppe = None, Print = 
         FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, 'Zusammen', Name[j], out, True, 'Zusammen')
     plt.close()
     # Plot für die ideale Löslichkeit
-    # Ideal_Bulk = []
-    # for i in Gruppen:
-    #     for k in range(len(Semester_Names)):
-    #         if f'{k+1}_{i}' in Data_ideal.index:
-    #             Ideal_Bulk.append(Data_ideal(k+1, i, False))
+    Ideal_Bulk = []
+    for i in Gruppen:
+        for k in range(len(Semester_Names)):
+            if f'{k+1}_{i}' in Data_ideal.index:
+                Ideal_Bulk.append(Data_ideal(k+1, i, False))
                 
-    # for i in range(len(Ideal_Bulk)):
-    #     print(Ideal_Bulk)
-    #     plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][0], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][1], capsize=1.5, linestyle='none', color='black')
-    #     plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][2], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][3], capsize=1.5, linestyle='none', color='crimson')
-    # plt.savefig(f'{path}\\PNG\\Zusammen_Ideal.png')
+    for i in range(len(Ideal_Bulk)):
+        print(Ideal_Bulk)
+        plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][0], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][1], capsize=1.5, linestyle='none', color='black')
+        plt.errorbar(Ideal_Bulk[i][4], Ideal_Bulk[i][2], xerr=Ideal_Bulk[i][5], yerr=Ideal_Bulk[i][3], capsize=1.5, linestyle='none', color='crimson')
+    plt.savefig(f'{path}\\PNG\\Zusammen_Ideal.png')
     
 
 # Abfrage für eine Gruppe, Wasser
@@ -282,8 +282,8 @@ def EineGruppe(Gruppe, semester, Print = True):
 # # Mögliche Auswertmethoden:
 
 # EineAbfrage('A5', 'Benzoe', True) # Einzelne Gruppe und einzelner Stoff
-# EineGruppe('B3', 5) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
-# Ideal('B3', 5, True) # Ideale Lösung für eine Gruppe
+EineGruppe('B6', 5) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
+# Ideal('A6', 5, True) # Ideale Lösung für eine Gruppe
 
 AlleAbfragen([4, 5], Print=True, Probegruppe=['5_T(B3_S)'])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 
