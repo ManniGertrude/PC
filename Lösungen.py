@@ -11,9 +11,9 @@ import os
 fig, ax = plt.subplots()
 
 path = os.path.dirname(os.path.abspath(__file__))
-CTable = ['deeppink', 'blue', 'seagreen', 'darkorange', 'crimson' ]
-Semester_Names = ['WS_22_23', 'SS_23', 'WS_23_24','WS_24_25', 'SS_25']
-Semester_Names_ideal = [None, None, None, 'WS_24_25', 'SS_25']
+CTable = ['deeppink', 'blue', 'seagreen', 'darkorange', 'crimson', 'darkpurple']
+Semester_Names = ['WS_22_23', 'SS_23', 'WS_23_24','WS_24_25', 'SS_25', 'WS_25_26']
+Semester_Names_ideal = [None, None, None, 'WS_24_25', 'SS_25', 'WS_25_26']
 
 Data = pd.DataFrame()
 Data_ideal = pd.DataFrame()
@@ -80,7 +80,7 @@ def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mi
         # ax.plot(xValues, ci_upper, color='navy', alpha=0.2)
         # Fit-Funktion plotten
         fy = lin(out.beta, xValues)
-        ax.plot(xValues, fy, c='crimson',label = Replacer(f'({out.beta[0]:.0f}$\pm${out.sd_beta[0]:.0f}$) \cdot T^-$$^1 + $({out.beta[1]:.2f}$\pm${out.sd_beta[1]:.2f}) mit $R^2 =${r2_score(ln_x_B, lin(out.beta, Rez_T)):.3f}'))
+        ax.plot(xValues, fy, c='crimson',label = Replacer(f'({out.beta[0]:.0f}$\\pm${out.sd_beta[0]:.0f}$) \\cdot T^-$$^1 + $({out.beta[1]:.2f}$\\pm${out.sd_beta[1]:.2f}) mit $R^2 =${r2_score(ln_x_B, lin(out.beta, Rez_T)):.3f}'))
         # Reihenfolge der Legende ändern
         handles, labels = ax.get_legend_handles_labels() 
         handles = handles[2:] + handles[:2]
@@ -89,8 +89,8 @@ def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mi
         plt.xlim(min(Rez_T)-0.000005, max(Rez_T)+0.000005)
         plt.ylim(min(ln_x_B)-0.05, max(ln_x_B)+0.05)
         ax.set(xlabel='Reziproke Temperatur / $ K^{-1}$', ylabel=f'Stoffmengen-Logarithmus {Stoff}')
-        fig.suptitle(Replacer(f'1. mol. Lösungsenthalpie $\Delta_LH_B^\infty$ = ({H_mLinf:.0f} $\pm$ {H_mLinf_Error:.0f}) J/mol'), fontsize=12)
-        ax.set_title(Replacer(f'Mischenthalpie $\Delta_MH_B =$ ({Mischenthalpie:.0f} $\pm$ {Mischenthalpie_Error:.0f}) J/mol'))
+        fig.suptitle(Replacer(f'1. mol. Lösungsenthalpie $\\Delta_LH_B^\infty$ = ({H_mLinf:.0f} $\\pm$ {H_mLinf_Error:.0f}) J/mol'), fontsize=12)
+        ax.set_title(Replacer(f'Mischenthalpie $\\Delta_MH_B =$ ({Mischenthalpie:.0f} $\\pm$ {Mischenthalpie_Error:.0f}) J/mol'))
         ax.legend(handles, labels, loc='lower left', framealpha=0.2, fontsize=8.5)
         ax.grid()
         ax.xaxis.set_major_locator(MultipleLocator(0.00005))
@@ -147,11 +147,11 @@ def Auswertung(Gruppe, Stoff, Print, semester):
     if Print == True:
         print()
         print(f'Gruppe: {Gruppe}, Stoff: {Stoff}')
-        print(f'Die Lösungsenthalpie beträgt: ({H_mLinf:.0f} \pm {H_mLinf_Error:.0f}) J/mol')
-        print(f'Die Mischenthalpie beträgt: ({Mischenthalpie:.0f} \pm {Mischenthalpie_Error:.0f}) J/mol')
+        print(f'Die Lösungsenthalpie beträgt: ({H_mLinf:.0f} \\pm {H_mLinf_Error:.0f}) J/mol')
+        print(f'Die Mischenthalpie beträgt: ({Mischenthalpie:.0f} \\pm {Mischenthalpie_Error:.0f}) J/mol')
         print(f'Die ideale Löslichkeit beträgt: ')
         for i in range(len(x_B_id)):
-            print(f'({x_B_id[i]:.4f} \pm {x_B_id_Error[i]:.4f}) bei ({T_Data[i]:.2f} \pm {T_Error[i]:.2f}) K')
+            print(f'({x_B_id[i]:.4f} \\pm {x_B_id_Error[i]:.4f}) bei ({T_Data[i]:.2f} \\pm {T_Error[i]:.2f}) K')
         print()
     return [Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe, semester]
 
@@ -191,9 +191,9 @@ def Ideal(Gruppe, semester,  Print=True):
         if Print==True:
             print()
             print(f'Organisches Lösungsmittel der Gruppe {Gruppe}')
-            print(f'Die Ideale Löslichkeit beträgt: {x_B_lit:.4g} \pm {x_B_lit_Error:.2g}')
-            print(f'Die exp. Löslichkeit beträgt:   {x_B:.4g} \pm {x_B_lit:.2g}')
-            print(f'Die Abweichung des exp. Werts vom Literaturwert beträgt ({100*Abweichung_ideal:.1f} \pm {100*Abweichung_Ideal_Error:.1f})%')
+            print(f'Die Ideale Löslichkeit beträgt: {x_B_lit:.4g} \\pm {x_B_lit_Error:.2g}')
+            print(f'Die exp. Löslichkeit beträgt:   {x_B:.4g} \\pm {x_B_lit:.2g}')
+            print(f'Die Abweichung des exp. Werts vom Literaturwert beträgt ({100*Abweichung_ideal:.1f} \\pm {100*Abweichung_Ideal_Error:.1f})%')
             print()
         return [x_B, x_B_Error, x_B_lit, x_B_lit_Error, T_ideal, T_Error]
 
