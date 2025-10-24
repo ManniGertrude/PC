@@ -79,8 +79,8 @@ def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mi
         # ax.plot(xValues, ci_lower, color='navy', alpha=0.2)
         # ax.plot(xValues, ci_upper, color='navy', alpha=0.2)
         # Fit-Funktion plotten
-        fy = lin(out.beta, xValues)
-        ax.plot(xValues, fy, c='crimson',label = Replacer(f'({out.beta[0]:.0f}$\\pm${out.sd_beta[0]:.0f}$) \\cdot T^-$$^1 + $({out.beta[1]:.2f}$\\pm${out.sd_beta[1]:.2f}) mit $R^2 =${r2_score(ln_x_B, lin(out.beta, Rez_T)):.3f}'))
+        # fy = lin(out.beta, xValues)
+        # ax.plot(xValues, fy, c='crimson',label = Replacer(f'({out.beta[0]:.0f}$\\pm${out.sd_beta[0]:.0f}$) \\cdot T^-$$^1 + $({out.beta[1]:.2f}$\\pm${out.sd_beta[1]:.2f}) mit $R^2 =${r2_score(ln_x_B, lin(out.beta, Rez_T)):.3f}'))
         # Reihenfolge der Legende ändern
         handles, labels = ax.get_legend_handles_labels() 
         handles = handles[2:] + handles[:2]
@@ -89,7 +89,7 @@ def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mi
         plt.xlim(min(Rez_T)-0.000005, max(Rez_T)+0.000005)
         plt.ylim(min(ln_x_B)-0.05, max(ln_x_B)+0.05)
         ax.set(xlabel='Reziproke Temperatur / $ K^{-1}$', ylabel=f'Stoffmengen-Logarithmus {Stoff}')
-        fig.suptitle(Replacer(f'1. mol. Lösungsenthalpie $\\Delta_LH_B^\infty$ = ({H_mLinf:.0f} $\\pm$ {H_mLinf_Error:.0f}) J/mol'), fontsize=12)
+        fig.suptitle(Replacer(f'1. mol. Lösungsenthalpie $\\Delta_LH_B^\\infty$ = ({H_mLinf:.0f} $\\pm$ {H_mLinf_Error:.0f}) J/mol'), fontsize=12)
         ax.set_title(Replacer(f'Mischenthalpie $\\Delta_MH_B =$ ({Mischenthalpie:.0f} $\\pm$ {Mischenthalpie_Error:.0f}) J/mol'))
         ax.legend(handles, labels, loc='lower left', framealpha=0.2, fontsize=8.5)
         ax.grid()
@@ -224,12 +224,12 @@ def AlleAbfragen(Semesterauswahl = [1, 2, 3, 4, 5], Probegruppe = None, Print = 
             plt.errorbar([],[], color=CTable[k-1], capsize=1, label=f'{Semester_Names[k-1]}', marker = '+', linestyle='none', markersize=12)            
         for i in range(len(Stoff)):
             if f'{Stoff[i][9]}_T({Stoff[i][8]}_{Name[j][:1]})' in Probegruppe:
-                plt.errorbar(Stoff[i][0], Stoff[i][1], xerr=Stoff[i][2], yerr=Stoff[i][3], capsize=1.5, linestyle='none', color='black', zorder=2) 
-                out = Fit(Stoff[i][0], Stoff[i][1], Stoff[i][2], Stoff[i][3])
+                # plt.errorbar(Stoff[i][0], Stoff[i][1], xerr=Stoff[i][2], yerr=Stoff[i][3], capsize=1.5, linestyle='none', color='black', zorder=2) 
+                # out = Fit(Stoff[i][0], Stoff[i][1], Stoff[i][2], Stoff[i][3])
                 plt.plot(lin_vals, lin(out.beta, lin_vals), color='black', label=f'{Stoff[i][9]} {Stoff[i][8]}')
             else:
-                out = Fit(Stoff[i][0], Stoff[i][1], Stoff[i][2], Stoff[i][3])
-                plt.plot(lin_vals, lin(out.beta, lin_vals), color=CTable[Stoff[i][9]-1], alpha = 0.2, zorder=0)
+                # out = Fit(Stoff[i][0], Stoff[i][1], Stoff[i][2], Stoff[i][3])
+                # plt.plot(lin_vals, lin(out.beta, lin_vals), color=CTable[Stoff[i][9]-1], alpha = 0.2, zorder=0)
                 plt.errorbar(Stoff[i][0], Stoff[i][1], xerr=Stoff[i][2], yerr=Stoff[i][3], capsize=1, linestyle='none', color=CTable[Stoff[i][9]-1], zorder=1, linewidth=1)
         ln_x_B = np.concatenate([Stoff[i][1] for i in range(len(Stoff))])
         ln_x_B_Error = np.concatenate([Stoff[i][3] for i in range(len(Stoff))])
@@ -286,5 +286,5 @@ def EineGruppe(Gruppe, semester, Print = True):
 # EineGruppe('B6', 5) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A6', 5, True) # Ideale Lösung für eine Gruppe
 
-AlleAbfragen([4, 5], Print=True, Probegruppe=['5_T(B4_B)'])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+AlleAbfragen([1,2,3,4,5], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 
