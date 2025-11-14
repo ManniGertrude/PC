@@ -57,7 +57,7 @@ def Plotparams(Name, Titel, minmax = [68, 132], legend=True):
     plt.ylim(minmax[0]-3, minmax[1]+3)
     plt.xlim(-0.02, 1.02)
     plt.xlabel('Stoffkonzentration $x_B$')
-    plt.ylabel('Temperatur in$^\circ C$')
+    plt.ylabel('Temperatur in$^\\circ C$')
     plt.legend()
     plt.grid()
     plt.title(Titel)
@@ -78,7 +78,7 @@ def fit(func, x, y, Name, yError, Farbe, labeln):
     out = myodr.run()
     fy = func(out.beta, xWerte)
     if labeln == True:
-        plt.plot(xWerte, fy, label = f'[{out.beta[0]:.1f}$\pm${np.sqrt(out.sd_beta[0]**2 + st.mean(yError)**2):.1f}]$^\circ C$', alpha=0.65, color=Farbe)
+        plt.plot(xWerte, fy, label = f'[{out.beta[0]:.1f}$\\pm${np.sqrt(out.sd_beta[0]**2 + st.mean(yError)**2):.1f}]$^\\circ C$', alpha=0.65, color=Farbe)
     else:
         plt.plot(xWerte, fy, label = Name, alpha=0.65, color=Farbe)
     return out
@@ -176,8 +176,8 @@ def jeder_stoff_ein_plot(Probegruppe = 'SS_25_A1'):
 
 
 if __name__ == '__main__':
-    # eine_gruppe_ein_plot('SS_25', 'A5')        # Beispiel für eine Gruppe
-    jede_gruppe_ein_plot()                     # Gibt für jede Gruppe einen Plot aus
-    mean_std = get_mean_std()
+    eine_gruppe_ein_plot('WS_25-26', 'B5')       # Beispiel für eine Gruppe
+    # jede_gruppe_ein_plot()                     # Gibt für jede Gruppe einen Plot aus
+    # mean_std = get_mean_std()
     # jedes_semester_ein_plot()                  # Gibt für jedes Semester einen Plot aus
-    jeder_stoff_ein_plot()                     # Gibt die Zusammenfassungen von Semester 1-4 in einem Plot aus
+    # jeder_stoff_ein_plot()                     # Gibt die Zusammenfassungen von Semester 1-4 in einem Plot aus
