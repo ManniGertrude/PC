@@ -142,7 +142,7 @@ def jedes_semester_ein_plot():
 
 
 
-def jeder_stoff_ein_plot(Probegruppe = 'SS_25_A1'):
+def jeder_stoff_ein_plot(Probegruppe = None):
     for Stoff in ['Benzamid', 'Benzil']:
         minmax = [100, 100]
         if Stoff == 'Benzamid':
@@ -176,8 +176,8 @@ def jeder_stoff_ein_plot(Probegruppe = 'SS_25_A1'):
 
 
 if __name__ == '__main__':
-    eine_gruppe_ein_plot('WS_25-26', 'B5')       # Beispiel für eine Gruppe
+    # eine_gruppe_ein_plot('WS_25-26', 'B5')       # Beispiel für eine Gruppe
     # jede_gruppe_ein_plot()                     # Gibt für jede Gruppe einen Plot aus
-    # mean_std = get_mean_std()
+    mean_std = get_mean_std()
     # jedes_semester_ein_plot()                  # Gibt für jedes Semester einen Plot aus
-    # jeder_stoff_ein_plot()                     # Gibt die Zusammenfassungen von Semester 1-4 in einem Plot aus
+    jeder_stoff_ein_plot()                     # Gibt die Zusammenfassungen in einem Plot aus
