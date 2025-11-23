@@ -286,5 +286,5 @@ def EineGruppe(Gruppe, semester, Print = True):
 EineGruppe('B5', 6) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A5', 6, True) # Ideale Lösung für eine Gruppe
 
-# AlleAbfragen([1,2,3,4,5], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+AlleAbfragen([1,2,3,4,5], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 
