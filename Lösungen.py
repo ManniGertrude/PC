@@ -18,12 +18,12 @@ Semester_Names_ideal = [None, None, None, 'WS_24_25', 'SS_25', 'WS_25_26']
 Data = pd.DataFrame()
 Data_ideal = pd.DataFrame()
 for i in range(len(Semester_Names)):
-    Data_temp = pd.read_table(f'{path}\\Daten\\Wasser_{Semester_Names[i]}.csv', sep=",", header=0, index_col=0)
+    Data_temp = pd.read_table(f'{path}/Daten/Wasser_{Semester_Names[i]}.csv', sep=",", header=0, index_col=0)
     Data_temp.index = [f'{i+1}_' + str(idx) for idx in Data_temp.index]
     Data = pd.concat([Data, Data_temp])
 for i in range(len(Semester_Names_ideal)):
     if Semester_Names_ideal[i] is not None:
-        Data_ideal_temp = pd.read_table(f'{path}\\Daten\\Ideal_{Semester_Names_ideal[i]}.csv', sep=",", header=0, index_col=0)
+        Data_ideal_temp = pd.read_table(f'{path}/Daten/Ideal_{Semester_Names_ideal[i]}.csv', sep=",", header=0, index_col=0)
         Data_ideal_temp.index = [f'{i+1}_' + str(idx) for idx in Data_ideal_temp.index]
         Data_ideal = pd.concat([Data_ideal, Data_ideal_temp])
  
@@ -97,9 +97,9 @@ def FitPlot(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mi
         ax.xaxis.set_minor_locator(MultipleLocator(0.00001))
 
         if semester != 'Zusammen':
-            fig.savefig(f'{path}\\PNG\\Wasser_{Semester_Names[semester-1]}\\Wasser {Gruppe} {Stoff}.png', dpi=300)
+            fig.savefig(f'{path}/PNG/Wasser_{Semester_Names[semester-1]}/Wasser {Gruppe} {Stoff}.png', dpi=300)
         else:
-            fig.savefig(f'{path}\\PNG\\Zusammen_{Stoff}.png', dpi=300)
+            fig.savefig(f'{path}/PNG/Zusammen_{Stoff}.png', dpi=300)
         plt.cla()
 
 
@@ -283,8 +283,8 @@ def EineGruppe(Gruppe, semester, Print = True):
 # # Mögliche Auswertmethoden:
 
 # EineAbfrage('A5', 'Salicyl', True, 6) # Einzelne Gruppe und einzelner Stoff
-EineGruppe('B5', 6) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
+EineGruppe('B4', 6) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A5', 6, True) # Ideale Lösung für eine Gruppe
 
-# AlleAbfragen([1,2,3,4,5], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+# AlleAbfragen([1,2,3,4,5,6], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 
