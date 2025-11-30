@@ -283,7 +283,7 @@ def EineGruppe(Gruppe, semester, Print = True):
 # # Mögliche Auswertmethoden:
 
 # EineAbfrage('A5', 'Salicyl', True, 6) # Einzelne Gruppe und einzelner Stoff
-EineGruppe('B4', 6) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
+EineGruppe('B23', 6) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A5', 6, True) # Ideale Lösung für eine Gruppe
 
 # AlleAbfragen([1,2,3,4,5], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
