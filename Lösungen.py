@@ -11,7 +11,7 @@ import os
 fig, ax = plt.subplots()
 
 path = os.path.dirname(os.path.abspath(__file__))
-CTable = ['deeppink', 'blue', 'seagreen', 'darkorange', 'crimson', 'darkpurple']
+CTable = ['deeppink', 'blue', 'seagreen', 'darkorange', 'crimson', 'darkviolet']
 Semester_Names = ['WS_22_23', 'SS_23', 'WS_23_24','WS_24_25', 'SS_25', 'WS_25_26']
 Semester_Names_ideal = [None, None, None, 'WS_24_25', 'SS_25', 'WS_25_26']
 
@@ -199,7 +199,7 @@ def Ideal(Gruppe, semester,  Print=True):
 
 
 # Abfrage für alle Gruppen
-def AlleAbfragen(Semesterauswahl = [1, 2, 3, 4, 5], Probegruppe = None, Print = True):
+def AlleAbfragen(Semesterauswahl = [3, 4, 5, 6], Probegruppe = None, Print = True):
     Salicyl = []
     Benzoe = []
     for k in Semesterauswahl:
@@ -285,7 +285,6 @@ def EineGruppe(Gruppe, semester, Print = True):
 # EineAbfrage('A5', 'Salicyl', True, 6) # Einzelne Gruppe und einzelner Stoff
 EineGruppe('A2', 6) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A5', 6, True) # Ideale Lösung für eine Gruppe
-
 # AlleAbfragen([1,2,3,4,5], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
-# AlleAbfragen([1,2,3,4,5,6], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+# AlleAbfragen([4,5,6], Print=True, Probegruppe=['6_T(B1_S)'])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 
