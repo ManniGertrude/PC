@@ -120,7 +120,6 @@ def Auswertung(Gruppe, Stoff, Print, semester):
     ln_x_B_Error = abs(x_B_Error/x_B)                                   # Einheitenlos
     Rez_T = 1/T_Data                                                    # 1/T
     Rez_T_Error = T_Error/T_Data**2                                     # 1/T
-    
     # Regression
     out = Fit(Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error)
     # Lösungsenthalpie
@@ -149,9 +148,9 @@ def Auswertung(Gruppe, Stoff, Print, semester):
         print(f'Gruppe: {Gruppe}, Stoff: {Stoff}')
         print(f'Die Lösungsenthalpie beträgt: ({H_mLinf:.0f} \\pm {H_mLinf_Error:.0f}) J/mol')
         print(f'Die Mischenthalpie beträgt: ({Mischenthalpie:.0f} \\pm {Mischenthalpie_Error:.0f}) J/mol')
-        print(f'Die ideale Löslichkeit beträgt: ')
+        print(f'T/°C |   V  |    c   | xB e-4 | ln xB |   T/K  |  1/T e-3 | x_B id.', end='\n')
         for i in range(len(x_B_id)):
-            print(f'({x_B_id[i]:.4f} \\pm {x_B_id_Error[i]:.4f}) bei ({T_Data[i]:.2f} \\pm {T_Error[i]:.2f}) K')
+            print(f'{T_Data[i]-273.15:>4.1f} | {V_Data[i]:>4.2f} | {n_B[i]/0.025:>4.4f} | {x_B[i]*1e4:.4f} | {ln_x_B[i]:.2f} | {T_Data[i]:>6.2f} | {Rez_T[i]*1e3:.6f} | {x_B_id[i]:.4f}', end='\n')
         print()
     return [Rez_T, ln_x_B, Rez_T_Error, ln_x_B_Error, H_mLinf, H_mLinf_Error, Mischenthalpie, Mischenthalpie_Error, Gruppe, semester]
 
@@ -282,8 +281,8 @@ def EineGruppe(Gruppe, semester, Print = True):
 
 # # Mögliche Auswertmethoden:
 
-# EineAbfrage('A5', 'Salicyl', True, 6) # Einzelne Gruppe und einzelner Stoff
-EineGruppe('B1', 6) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
+# EineAbfrage('A3', 'Salicyl', True, 6) # Einzelne Gruppe und einzelner Stoff
+EineGruppe('A3', 6) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A5', 6, True) # Ideale Lösung für eine Gruppe
 # AlleAbfragen([1,2,3,4,5], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 # AlleAbfragen([4,5,6], Print=True, Probegruppe=['6_T(B1_S)'])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
