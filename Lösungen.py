@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import scipy.odr as odr
+import odrpack as odr
 import numpy as np
 import pandas as pd
 import scipy.stats as st
@@ -58,10 +58,17 @@ def Replacer(Text):
 
 # ODR-Regression 
 def Fit(x,y,sx,sy):
-    model = odr.Model(lin)
-    mydata = odr.RealData(x, y, sx=sx, sy=sy)
-    myodr = odr.ODR(mydata, model, beta0=[-4000, 5], maxit=1000)
-    out = myodr.run()
+    weight_x = 1.0 / np.square(np.asarray(sx, dtype=float))
+    weight_y = 1.0 / np.square(np.asarray(sy, dtype=float))
+    out = odr.odr_fit(
+        lambda x_data, beta: lin(beta, x_data),
+        np.asarray(x, dtype=float),
+        np.asarray(y, dtype=float),
+        beta0=[-4000, 5],
+        weight_x=weight_x,
+        weight_y=weight_y,
+        maxit=1000,
+    )
     return out
     
 
@@ -285,5 +292,5 @@ def EineGruppe(Gruppe, semester, Print = True):
 EineGruppe('A6', 6) # Eine Gruppe und beide Stoffe sowie die ideale Lösung
 # Ideal('A5', 6, True) # Ideale Lösung für eine Gruppe
 # AlleAbfragen([1,2,3,4,5], Print=True, Probegruppe=[])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
-# AlleAbfragen([4,5,6], Print=True, Probegruppe=['6_T(B1_S)'])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
+AlleAbfragen([4,5,6], Print=True, Probegruppe=['6_T(B1_S)'])  # Alle Gruppen und Stoffe. Optional Print=True/False für Ausgabe der Ergebnisse
 

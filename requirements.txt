@@ -1,0 +1,6 @@
+matplotlib
+odrpack
+numpy
+pandas
+scipy
+scikit-learn

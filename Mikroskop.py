@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import scipy.odr as odr
+import odrpack as odr
 import numpy as np
 import pandas as pd
 from scipy.interpolate import make_interp_spline
@@ -22,7 +22,7 @@ Anteile = ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'L0', 'L1', 'L2
 
 # Dateinamen und Bezeichnungen
 Dateien = []
-for files in os.listdir(f'{path}\\Daten'):
+for files in os.listdir(f'{path}/Daten'):
     if files[:10] == 'Mikroskop_':
         Dateien.append(files[:-4])
 Bezeichnung = [Dateien[i][10:] for i in range(len(Dateien))]
@@ -30,7 +30,7 @@ Bezeichnung = [Dateien[i][10:] for i in range(len(Dateien))]
 
 data_dict = {}
 for Datei in Dateien:
-    Data = pd.read_csv(f'{path}\\Daten\\{Datei}.csv', sep=",", header=0, names=Anteile)
+    Data = pd.read_csv(f'{path}/Daten/{Datei}.csv', sep=",", header=0, names=Anteile)
     for index, row in Data.iterrows():
         index = index.replace('Bl', 'Benzil').replace('Bd', 'Benzamid')
         data_dict.update({f'{Datei[10:]}_{index}': row.to_list()})
@@ -61,7 +61,9 @@ def Plotparams(Name, Titel, minmax = [68, 132], legend=True):
     plt.legend()
     plt.grid()
     plt.title(Titel)
-    plt.savefig(f'{path}\\PNG\\Mikroskop\\{Name}.png')
+    output_path = os.path.join(path, 'PNG', 'Mikroskop', f'{Name}.png')
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    plt.savefig(output_path)
     plt.cla()
 
 
@@ -72,10 +74,17 @@ def lin(Para, x):
 
 # Fitfunktion mit Fehler für die Eutektikale
 def fit(func, x, y, Name, yError, Farbe, labeln):
-    model = odr.Model(func)
-    mydata = odr.RealData(x, y, sx= 0.01, sy=yError)
-    myodr = odr.ODR(mydata, model, beta0=[80.0], maxit=1000)
-    out = myodr.run()
+    weight_x = 1.0 / (0.01 ** 2)
+    weight_y = 1.0 / np.square(np.asarray(yError, dtype=float))
+    out = odr.odr_fit(
+        lambda x_data, beta: func(beta, x_data),
+        np.asarray(x, dtype=float),
+        np.asarray(y, dtype=float),
+        beta0=[80.0],
+        weight_x=weight_x,
+        weight_y=weight_y,
+        maxit=1000,
+    )
     fy = func(out.beta, xWerte)
     if labeln == True:
         plt.plot(xWerte, fy, label = f'[{out.beta[0]:.1f}$\\pm${np.sqrt(out.sd_beta[0]**2 + st.mean(yError)**2):.1f}]$^\\circ C$', alpha=0.65, color=Farbe)
@@ -97,7 +106,7 @@ def eine_gruppe_ein_plot(Semester, Gruppe):
         plt.errorbar(Anteil[9:], Data[9:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
         plt.errorbar(Anteil[:9], Data[:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
         fit(lin, Anteil[:9], Data[:9], None, [0.1]*9, 'purple', True)
-        Plotparams(f'{Semester[0:2]} {Semester[3:]}\\{Gruppe}_{Stoff}_Mikroskop', f'Daten der Gruppe {Gruppe} aus dem {Semester}\nAcetanilid - {Stoff}')
+        Plotparams(os.path.join(f'{Semester[0:2]} {Semester[3:]}', f'{Gruppe}_{Stoff}_Mikroskop'), f'Daten der Gruppe {Gruppe} aus dem {Semester}\nAcetanilid - {Stoff}')
 
 
 # Jede Gruppe in einem Plot
@@ -113,9 +122,7 @@ def jede_gruppe_ein_plot():
         plt.errorbar(Anteil[9:], data_dict[Data][9:], xerr=0.01, yerr=1, color='navy', capsize=3, linestyle='none', label='Liquidus')
         plt.errorbar(Anteil[:9], data_dict[Data][:9], xerr=0.01, yerr=1, color='red', capsize=3, linestyle='none', label='Eutektikale')
         fit(lin, Anteil[:9], data_dict[Data][:9], None, [0.1]*9, 'purple', True)
-        if not os.path.exists(f'{path}\\PNG\\Mikroskop\\{index[0]} {index[1]}'):
-            os.makedirs(f'{path}\\PNG\\Mikroskop\\{index[0]} {index[1]}')
-        Plotparams(f'{index[0]} {index[1]}\\{index[2]}_{index[3]}_Mikroskop', f'Daten der Gruppe {index[2]} aus dem {index[0]} {index[1]}\nAcetanilid - {index[3]}', minmax)
+        Plotparams(os.path.join(f'{index[0]} {index[1]}', f'{index[2]}_{index[3]}_Mikroskop'), f'Daten der Gruppe {index[2]} aus dem {index[0]} {index[1]}\nAcetanilid - {index[3]}', minmax)
 
 
 
